@@ -1,0 +1,10 @@
+{
+  "name": "nyf-interactive",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-sitemap.mjs site",
+    "check": "node scripts/check.mjs site",
+    "test": "npm run build && npm run check"
+  }
+}

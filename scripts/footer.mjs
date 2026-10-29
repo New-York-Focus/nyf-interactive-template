@@ -103,7 +103,8 @@ function partCss(css, markup, { scope: wrap, runtime = [] }) {
   // SVG is left alone: its fill and stroke attributes count as styles that "all: revert" would undo.
   const base = `${wrap}{all:revert;display:block;font-family:${font};font-size:16px;line-height:1.5;font-weight:400;`
     + "font-style:normal;letter-spacing:normal;text-transform:none;text-align:left;color:#000;-webkit-font-smoothing:antialiased;"
-    + `-moz-osx-font-smoothing:grayscale}${wrap} :where(:not(svg,svg *)){all:revert}`;
+    + "-moz-osx-font-smoothing:grayscale;font-synthesis:weight style small-caps}"   // the site's default: Knockout's bold is synthesized
+    + `${wrap} :where(:not(svg,svg *)){all:revert}`;
   return base + emit(nodes) + "\n";
 }
 

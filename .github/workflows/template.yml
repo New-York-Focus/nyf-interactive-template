@@ -1,7 +1,7 @@
 # Weekly: are this project's template-owned files (template.json) the same as nyf-interactive-template's? If not, open an
 # issue so someone runs `npm run template:sync`, checks the result and opens a PR. Run it by hand from the Actions tab too.
-# The template is private, so this needs the TEMPLATE_READ_TOKEN secret (a read-only token for nyf-interactive-template);
-# without it, the run says so and stops.
+# The template is public, so no token is needed. (If it ever goes private, add a TEMPLATE_READ_TOKEN secret, a read-only
+# token for nyf-interactive-template; without one, the run warns and stops.)
 name: Template sync check
 
 on:
@@ -18,8 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
       - id: check
@@ -31,7 +31,7 @@ jobs:
           code=$?
           cat result.txt
           echo "code=$code" >> "$GITHUB_OUTPUT"
-          if [ "$code" = 2 ]; then echo "::warning::Couldn't read nyf-interactive-template; add the TEMPLATE_READ_TOKEN secret."; fi
+          if [ "$code" = 2 ]; then echo "::warning::Couldn't read nyf-interactive-template. If it's private, add the TEMPLATE_READ_TOKEN secret."; fi
       - if: steps.check.outputs.code == '1'
         env:
           GH_TOKEN: ${{ github.token }}

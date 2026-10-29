@@ -5,8 +5,8 @@
 // TEMPLATE_BRANCH=<branch> reads another branch of the template instead of main, to try a template change first.
 // Whole files are replaced; in CLAUDE.md and README.md only the template's side of the nyf-template-sync marker line is,
 // so a project's own notes stay; package.json gets the template's scripts, keeping any the project adds.
-// Reads the template with git, so it needs read access to it: yours locally; in GitHub Actions, the TEMPLATE_READ_TOKEN
-// secret (a read-only token for the template), unless the template is public.
+// Reads the template with git. It's public, so no access is needed; if it ever goes private, git uses your own access
+// locally, and GitHub Actions a TEMPLATE_READ_TOKEN secret (a read-only token for the template).
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
@@ -22,7 +22,7 @@ function fetchTemplate(t) {
     execFileSync("git", ["fetch", "--quiet", "--depth=1", "--no-tags", url, process.env.TEMPLATE_BRANCH || t.branch], { stdio: ["ignore", "ignore", "pipe"] });
   } catch {
     // never print the URL: it can hold the token
-    throw new Error(`can't read ${t.repo.replace(/\.git$/, "")} (no access? locally, check your GitHub login; in Actions, add the TEMPLATE_READ_TOKEN secret)`);
+    throw new Error(`can't read ${t.repo.replace(/\.git$/, "")} (no access? locally, check your GitHub login; in Actions, a TEMPLATE_READ_TOKEN secret if the template is private)`);
   }
   const commit = execFileSync("git", ["rev-parse", "--short", "FETCH_HEAD"]).toString().trim();
   const show = (path) => {

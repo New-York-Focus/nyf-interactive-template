@@ -1,3 +1,4 @@
+<!-- nyf-template-sync: everything above this line is this project's own README; everything below comes from nyf-interactive-template (npm run template:sync replaces it). -->
 # New York Focus interactive (template)
 
 Start every reader-facing interactive from this repo. Each one is published at

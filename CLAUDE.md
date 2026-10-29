@@ -23,3 +23,42 @@ has the full checklist and setup; this file is the short version for Claude.
   image (`og:image`, with alt text) of its own; `npm test` enforces these, and the placeholder `share.png` doesn't count.
 - Every page keeps the analytics block from the template (Plausible and Google Tag Manager, the same as nysfocus.com). Don't add other trackers, ad scripts or third-party embeds without asking.
 - Don't change `nyf-interactives` from here. Launches and routing are PRs there, reviewed by Kyle.
+
+## Working together
+Several people, each with their own Claude, build and change interactives independently: the author of each project
+(e.g. Benjy) and Kyle. The repo is how everyone stays in sync, so:
+- **Start every session up to date:** `git checkout main && git pull`, then read what changed since you last worked
+  (`git log --oneline -15`, and the descriptions of the merged PRs). Work on your own branch; open a PR; Kyle merges.
+  A merge to `main` publishes to readers.
+- **Who owns what.** The project's author owns its content and design: its data, copy, page templates, styles and
+  graphics. Kyle owns the shared parts: the template-owned files (listed in `template.json`), Functions and outside
+  services, and routing in `nyf-interactives`. Change a template-owned file in `nyf-interactive-template`, never in a
+  project; `npm run template:sync` then brings it into each project (a weekly check opens an issue when one is behind).
+- **Generated files** (built pages, `sitemap.xml`, link-card images) are never merged or edited by hand: merge the
+  sources, then rebuild.
+- **Decisions stay decided.** Don't undo anything listed under Decisions without asking whoever made it. When a PR makes a
+  lasting decision, add a dated line to Decisions in the same PR (project decisions under "This project" below).
+- **Talk directly, not only in a PR,** before: a launch; a new Function, outside service or key; a change to a
+  template-owned file; an editorial or design call on someone else's page (headlines, titles, descriptions, colors,
+  layout); anything that changes what readers see on a page someone else is working on.
+- **Every PR description says what changed and why,** and how it was tested: it's the record the next person reads.
+
+## Decisions (all interactives)
+- 2026-10-29 · nysfocus.com is the brand's source of truth (colors, fonts, footer), not the Canva kit. Kyle
+- 2026-10-29 · The footer is the website's, as-is, kept in sync daily; including "Manage Cookie Preferences", which does
+  nothing on the site today (it may be removed there). Kyle
+- 2026-10-29 · Tracking isn't held for cookie consent, the same as nysfocus.com. Kyle
+- 2026-10-29 · Knockout's "1" (which can read as "I") is kept, as on nysfocus.com. Check numerals in small labels when
+  choosing a new headline font. Kyle
+- 2026-10-29 · Wisepops runs on every page (which campaigns show where is set in Wisepops). AdSense, the site's
+  "articles read" cookie and its JS bundle stay off interactives. Kyle
+- 2026-10-29 · Plausible tags every interactive pageview `event-category="Interactives"`. Kyle
+- 2026-10-29 · Link-card images carry no text (platforms show the title beside them): the graphic, a small ink logo top
+  left and a yellow rule along the bottom; one per page where pages differ. Kyle
+- 2026-10-29 · What readers type never goes from the browser to an outside service; it goes through the project's own
+  Functions (Kyle approves each one). Kyle
+
+<!-- nyf-template-sync: everything above this line comes from nyf-interactive-template (npm run template:sync replaces it); everything below is this project's own. -->
+## This project
+This is the template itself. A project describes itself here: who owns it, how it's built, and its own decisions
+(dated, with who made them).

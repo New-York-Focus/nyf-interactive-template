@@ -27,7 +27,7 @@ Start every reader-facing interactive from this repo. Each one is published at
 - **Analytics** on every page: the Plausible script (tagged `event-category="Interactives"`, so interactives can be filtered in
   Plausible like article categories) and the Google Tag Manager snippet, exactly as in `site/index.html`.
 - **Brand fonts** on every page: the nysfocus.com font kit `<link>`, as in `site/index.html`.
-- **The nysfocus.com footer** on every page and `404.html`, exactly as in `brand/`. `npm run build` puts it there; don't edit it in the pages.
+- **The nysfocus.com header and footer** on every page and `404.html`, exactly as in `brand/`. `npm run build` puts them there; don't edit them in the pages.
 - **The shared head tags** on every page and `404.html`, exactly as in `brand/head.html`: Wisepops (the newsletter and donation
   popups on nysfocus.com; which campaigns show where is set in Wisepops), the site's icons, the social tags that are the
   same on every page (`og:site_name`, `twitter:site`…) and a font preconnect. `npm run build` puts them before `</head>`.
@@ -43,7 +43,7 @@ Start every reader-facing interactive from this repo. Each one is published at
 
 Not checked automatically, but expected: `twitter:image:alt` (the same as `og:image:alt`), and a page that works at phone width.
 
-## Brand: colors, fonts and the footer
+## Brand: colors, fonts, the header and the footer
 - **Colors and fonts:** `site/brand.css` has the nysfocus.com colors and type as CSS variables (`--nyf-yellow`, `--nyf-ink`,
   `--nyf-font-headline`, `--nyf-font-serif`…). Link the font kit and `brand.css` from every page, as `site/index.html`
   does, and style with the variables. The fonts (Knockout and Chronicle, from Hoefler&Co) are licensed for nysfocus.com:
@@ -52,9 +52,14 @@ Not checked automatically, but expected: `twitter:image:alt` (the same as `og:im
   links made absolute; `brand/footer.css` is the website's own CSS rules for it, scoped to `.nyf-footer` after a reset, so
   the footer and the interactive can't restyle each other. `npm run build` (part of `npm test`) inserts both before
   `</body>` on every page, between `<!-- nyf-footer… -->` and `<!-- /nyf-footer -->`.
-- **Keeping it in sync:** when the website's footer changes, run `npm run footer:sync`, then `npm test`, look at a page and
-  open a PR with `brand/` and `site/`. The "Footer sync check" GitHub Action compares the two every morning and opens an
-  issue when they differ (run it by hand from the Actions tab too).
+- **Header:** the short version of the website's header (the bar it shows once you scroll: logo, menu, Donate and
+  Sign Up) at the start of every page, the same way as the footer: `brand/header.html` and `brand/header.css`, scoped to
+  `.nyf-header`, between `<!-- nyf-header… -->` and `<!-- /nyf-header -->`. On the site its menu runs on the site's JS
+  bundle, which interactives don't load; `brand/header.js` does the same in a few lines (the sync turns the menu's
+  Alpine.js attributes into `data-nyf-*` ones it reads).
+- **Keeping them in sync:** when the website's header or footer changes, run `npm run footer:sync`, then `npm test`, look
+  at a page and open a PR with `brand/` and `site/`. The "Footer sync check" GitHub Action compares them every morning and
+  opens an issue when they differ (run it by hand from the Actions tab too).
 
 ## Cloudflare Pages settings (Kyle creates the project)
 Workers & Pages › Create application › Pages › **Connect to Git** (never direct upload: a direct-upload project can't be

@@ -1,0 +1,45 @@
+# Weekly: are this project's template-owned files (template.json) the same as nyf-interactive-template's? If not, open an
+# issue so someone runs `npm run template:sync`, checks the result and opens a PR. Run it by hand from the Actions tab too.
+# The template is private, so this needs the TEMPLATE_READ_TOKEN secret (a read-only token for nyf-interactive-template);
+# without it, the run says so and stops.
+name: Template sync check
+
+on:
+  schedule:
+    - cron: "37 14 * * 1"   # Mondays, 10:37 a.m. New York (EDT)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  template:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - id: check
+        env:
+          TEMPLATE_READ_TOKEN: ${{ secrets.TEMPLATE_READ_TOKEN }}
+        run: |
+          set +e
+          npm run --silent template:check > result.txt 2>&1
+          code=$?
+          cat result.txt
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" = 2 ]; then echo "::warning::Couldn't read nyf-interactive-template; add the TEMPLATE_READ_TOKEN secret."; fi
+      - if: steps.check.outputs.code == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Template files differ from nyf-interactive-template"
+          if [ -z "$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[].number')" ]; then
+            { echo "The weekly check found template-owned files that differ from nyf-interactive-template:"; echo; echo '```'; cat result.txt; echo '```'; echo
+              echo "To update: \`npm run template:sync\`, then \`npm test\`, look at a page, and open a PR. Don't fix these files here: change them in the template."; } > body.md
+            gh issue create --title "$title" --body-file body.md
+          fi
+          exit 1

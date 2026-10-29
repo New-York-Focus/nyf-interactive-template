@@ -1,0 +1,28 @@
+{
+  "about": "Files every interactive shares with nyf-interactive-template. Change them there; `npm run template:sync` brings them into a project.",
+  "repo": "https://github.com/New-York-Focus/nyf-interactive-template.git",
+  "branch": "main",
+  "files": [
+    "template.json",
+    "scripts/template.mjs",
+    "scripts/check.mjs",
+    "scripts/pages.mjs",
+    "scripts/build-sitemap.mjs",
+    "scripts/footer.mjs",
+    "scripts/head.mjs",
+    "scripts/seo.mjs",
+    "scripts/arial-widths.mjs",
+    "brand/footer.html",
+    "brand/footer.css",
+    "brand/head.html",
+    "site/brand.css",
+    ".github/workflows/check.yml",
+    ".github/workflows/footer.yml",
+    ".github/workflows/template.yml"
+  ],
+  "sections": {
+    "CLAUDE.md": "above",
+    "README.md": "below"
+  },
+  "packageScripts": true
+}

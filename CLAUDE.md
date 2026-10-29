@@ -5,7 +5,7 @@ This repo is one reader-facing interactive. It is served at `https://nysfocus.co
 has the full checklist and setup; this file is the short version for Claude.
 
 ## Rules
-- Kyle (Director of Growth) approves anything beyond static files, and every launch. Be concise; test claims before asserting them.
+- Be concise; test claims before asserting them.
 - Run `npm test` before every commit. It must pass, and never weaken `scripts/check.mjs` to make it pass.
 - The site lives in `site/`. Links are relative (never start with `/`); every page is `…/index.html` in its own folder;
   canonical and `og:url` are the page's nysfocus.com address.
@@ -13,7 +13,7 @@ has the full checklist and setup; this file is the short version for Claude.
 - Keep `_headers` (noindex) as it is: the Worker removes it on nysfocus.com, and it keeps the `pages.dev` copy out of search.
 - No secrets in the repo, ever. If a Function needs a key, Kyle enters it as a Pages secret. Never handle the key, print
   it or log it.
-- Functions only with Kyle's approval: GET only, a timeout on every outside call, failures not cached, and never log what
+- Functions (`functions/`): GET only, a timeout on every outside call, failures not cached, and never log what
   readers type (queries, addresses, URLs, bodies). Log the provider and status only.
 - Brand: style with the variables in `site/brand.css`, and keep the font kit `<link>` on every page. The nysfocus.com header
   and footer come from `brand/` (`npm run build` inserts them); never edit them in the pages. Update them with
@@ -31,8 +31,9 @@ every project, and editorial, leadership and others as a project needs. Anyone m
 people decide among themselves when to loop each other in. What keeps everyone, and every Claude, in sync is that every
 change is logged in the repo:
 - **Start every session up to date:** `git checkout main && git pull`, then read what changed since you last worked
-  (`git log --oneline -15`, the descriptions of the merged PRs, and Decisions below). Work on your own branch; open a
-  PR; Kyle merges. A merge to `main` publishes to readers.
+  (`git log --oneline -15`, the descriptions of the merged PRs, and Decisions below). Work on your own branch and open a
+  PR. Anyone may merge any PR once its checks pass and it's up to date with `main` (no conflicts): a merge to `main`
+  publishes to readers, so check the live page afterwards.
 - **Every PR description says what changed and why,** and how it was tested: it's the record the next person reads.
 - **Log lasting decisions.** When a PR makes a lasting call (a design, wording, data or technical choice others should
   keep), add a dated line with who made it to Decisions in the same PR (project decisions under "This project" below).
@@ -57,11 +58,13 @@ change is logged in the repo:
 - 2026-10-29 · Link-card images carry no text (platforms show the title beside them): the graphic, a small ink logo top
   left and a yellow rule along the bottom; one per page where pages differ. Kyle
 - 2026-10-29 · What readers type never goes from the browser to an outside service; it goes through the project's own
-  Functions (Kyle approves each one). Kyle
+  Functions. Kyle
 - 2026-10-29 · The header is the website's short version (the bar it shows once you scroll: logo, menu, Donate, Sign
   Up), kept in sync with the footer; `brand/header.js` replaces the site's JS for its menu. Kyle
 - 2026-10-29 · Anyone may change any part of a project (growth, editorial, leadership); people decide when to loop each
   other in, and every change is logged (PR description, and Decisions for lasting calls). Kyle
+- 2026-10-29 · Anyone may merge any PR once its checks pass and it's up to date with `main`; no one waits on anyone's
+  approval. Kyle
 
 <!-- nyf-template-sync: everything above this line comes from nyf-interactive-template (npm run template:sync replaces it); everything below is this project's own. -->
 ## This project

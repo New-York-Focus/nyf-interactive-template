@@ -21,7 +21,7 @@ Start every reader-facing interactive from this repo. Each one is published at
 - **`sitemap.xml`** lists exactly the pages. `npm run build` writes it, so don't edit it by hand.
 - **`_headers`** starts with `X-Robots-Tag: noindex`, so the `pages.dev` copy stays out of search. The Worker removes it on nysfocus.com.
 - **`404.html`** exists.
-- **Static only.** A Pages Function (`functions/`) needs Kyle's approval first. After approval, set `"functions": true` in
+- **Static, unless it needs a Function.** For a Pages Function (`functions/`), set `"functions": true` in
   `interactive.json`. Functions must be GET only and must never log what readers type.
 - **No keys or tokens in the repo.** Kyle enters secrets in Cloudflare himself.
 - **Analytics** on every page: the Plausible script (tagged `event-category="Interactives"`, so interactives can be filtered in

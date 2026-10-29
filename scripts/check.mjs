@@ -3,6 +3,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { htmlFiles, pages, pageUrl, config } from "./pages.mjs";
 import { block as footerBlock } from "./footer.mjs";
+import { block as headBlock } from "./head.mjs";
 
 const dir = process.argv[2] || "site";
 const cfg = config(process.argv[3]);
@@ -34,15 +35,21 @@ for (const f of pages(dir)) {
   else if (attr(og, "content") !== want) fail(f, `og:url is ${attr(og, "content")}, expected ${want}`);
   for (const m of html.matchAll(/https?:\/\/[a-z0-9.-]+\.(?:pages\.dev|github\.io|workers\.dev)[^"'\s<]*/gi)) fail(f, `links to ${m[0]}`);
   // Analytics: the same Plausible site and Tag Manager container as nysfocus.com, so readers are counted.
-  if (!/<script\b[^>]*data-domain=["']nysfocus\.com["'][^>]*src=["']https:\/\/stats\.gridwork\.co\/js\/script[^"']*\.js["']/i.test(html)) fail(f, "missing the Plausible script (data-domain=\"nysfocus.com\")");
+  if (!/<script\b[^>]*data-domain=["']nysfocus\.com["'][^>]*src=["']https:\/\/stats\.gridwork\.co\/js\/script\.pageview-props\.js["'][^>]*event-category=["']Interactives["']/i.test(html)) fail(f, "missing the Plausible script (data-domain=\"nysfocus.com\", script.pageview-props.js, event-category=\"Interactives\")");
   if (!html.includes("GTM-5GLGNHCQ")) fail(f, "missing the Google Tag Manager snippet (GTM-5GLGNHCQ)");
   // Brand: the nysfocus.com font kit (the footer and brand.css need it).
   if (!html.includes('href="https://cloud.typography.com/14378/7423632/css/fonts.css"')) fail(f, "missing the font kit <link> (https://cloud.typography.com/14378/7423632/css/fonts.css)");
 }
 
-// The nysfocus.com footer, exactly as in brand/ (npm run build puts it there), on every page and 404.html.
-const footer = footerBlock();
-for (const f of htmlFiles(dir)) if (!read(f).includes(footer)) fail(f, "missing the nysfocus.com footer, or it was edited (run npm run build)");
+// The nysfocus.com footer and the shared <head> tags (Wisepops, icons, social), exactly as in brand/ (npm run build puts
+// them there), on every page and 404.html.
+const footer = footerBlock(), head = headBlock();
+for (const f of htmlFiles(dir)) {
+  const html = read(f);
+  if (!html.includes(footer)) fail(f, "missing the nysfocus.com footer, or it was edited (run npm run build)");
+  const i = html.indexOf(head);
+  if (i < 0 || i > html.search(/<\/head>/i)) fail(f, "missing the shared <head> tags from brand/head.html, or they were edited (run npm run build)");
+}
 
 // 4. Sitemap lists exactly the pages.
 if (!existsSync(`${dir}/sitemap.xml`)) fail("sitemap.xml", "missing (run npm run build)");

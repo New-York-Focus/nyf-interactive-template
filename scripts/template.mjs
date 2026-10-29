@@ -3,7 +3,7 @@
 //   npm run template:sync    update them from the template, then run npm test, look at a page and open a PR
 //   npm run template:check   list what differs and exit 1 if anything does (the weekly "Template sync check" Action)
 // TEMPLATE_BRANCH=<branch> reads another branch of the template instead of main, to try a template change first.
-// Whole files are replaced; in CLAUDE.md and README.md only the template's side of the nyf-template-sync marker line is,
+// Whole files are replaced; in AGENTS.md and README.md only the template's side of the nyf-template-sync marker line is,
 // so a project's own notes stay; package.json gets the template's scripts, keeping any the project adds.
 // Reads the template with git. It's public, so no access is needed; if it ever goes private, git uses your own access
 // locally, and GitHub Actions a TEMPLATE_READ_TOKEN secret (a read-only token for the template).
@@ -57,7 +57,9 @@ function plan() {
     if (read(path) !== theirs) changes.push({ path, text: theirs });
   }
   for (const [path, side] of Object.entries(t.sections || {})) {
-    const theirs = tpl.show(path), ours = read(path), text = merge(path, side, theirs, ours);
+    // AGENTS.md replaced CLAUDE.md (which now only imports it): the first sync carries the project's side over from CLAUDE.md
+    const ours = read(path) ?? (path === "AGENTS.md" && /nyf-template-sync/.test(read("CLAUDE.md") || "") ? read("CLAUDE.md") : null);
+    const theirs = tpl.show(path), text = merge(path, side, theirs, ours);
     if (ours !== text) changes.push({ path, text });
   }
   if (t.packageScripts) {

@@ -4,6 +4,7 @@
   "branch": "main",
   "files": [
     "template.json",
+    "CLAUDE.md",
     "scripts/template.mjs",
     "scripts/check.mjs",
     "scripts/pages.mjs",
@@ -24,7 +25,7 @@
     ".github/workflows/template.yml"
   ],
   "sections": {
-    "CLAUDE.md": "above",
+    "AGENTS.md": "above",
     "README.md": "below"
   },
   "packageScripts": true

@@ -15,8 +15,9 @@ has the full checklist and setup; this file is the short version for Claude.
   it or log it.
 - Functions only with Kyle's approval: GET only, a timeout on every outside call, failures not cached, and never log what
   readers type (queries, addresses, URLs, bodies). Log the provider and status only.
-- Brand: style with the variables in `site/brand.css`, and keep the font kit `<link>` on every page. The nysfocus.com footer
-  comes from `brand/` (`npm run build` inserts it); never edit it in the pages. Update it with `npm run footer:sync`.
+- Brand: style with the variables in `site/brand.css`, and keep the font kit `<link>` on every page. The nysfocus.com header
+  and footer come from `brand/` (`npm run build` inserts them); never edit them in the pages. Update them with
+  `npm run footer:sync`.
 - The shared `<head>` tags (Wisepops, icons, social) come from `brand/head.html`, inserted by `npm run build`; edit them
   there, never in the pages.
 - Never launch a page without an SEO `<title>` within 580px, a meta description within 920px, and a 1200×630 link-card
@@ -25,23 +26,23 @@ has the full checklist and setup; this file is the short version for Claude.
 - Don't change `nyf-interactives` from here. Launches and routing are PRs there, reviewed by Kyle.
 
 ## Working together
-Several people, each with their own Claude, build and change interactives independently: the author of each project
-(e.g. Benjy) and Kyle. The repo is how everyone stays in sync, so:
+Several people, each with their own Claude, change interactives independently: the growth team (which owns product) on
+every project, and editorial, leadership and others as a project needs. Anyone may change any part of a project; the
+people decide among themselves when to loop each other in. What keeps everyone, and every Claude, in sync is that every
+change is logged in the repo:
 - **Start every session up to date:** `git checkout main && git pull`, then read what changed since you last worked
-  (`git log --oneline -15`, and the descriptions of the merged PRs). Work on your own branch; open a PR; Kyle merges.
-  A merge to `main` publishes to readers.
-- **Who owns what.** The project's author owns its content and design: its data, copy, page templates, styles and
-  graphics. Kyle owns the shared parts: the template-owned files (listed in `template.json`), Functions and outside
-  services, and routing in `nyf-interactives`. Change a template-owned file in `nyf-interactive-template`, never in a
-  project; `npm run template:sync` then brings it into each project (a weekly check opens an issue when one is behind).
+  (`git log --oneline -15`, the descriptions of the merged PRs, and Decisions below). Work on your own branch; open a
+  PR; Kyle merges. A merge to `main` publishes to readers.
+- **Every PR description says what changed and why,** and how it was tested: it's the record the next person reads.
+- **Log lasting decisions.** When a PR makes a lasting call (a design, wording, data or technical choice others should
+  keep), add a dated line with who made it to Decisions in the same PR (project decisions under "This project" below).
+  To change a decision, replace its line in the PR that changes it, rather than undoing it silently. If you're asked
+  to do something that would undo a listed decision, say so before doing it, so the person can decide whether to
+  check with whoever made it.
+- **Shared files** (listed in `template.json`) are changed in `nyf-interactive-template`, never in a project;
+  `npm run template:sync` then brings them into each project (a weekly check opens an issue when one is behind).
 - **Generated files** (built pages, `sitemap.xml`, link-card images) are never merged or edited by hand: merge the
   sources, then rebuild.
-- **Decisions stay decided.** Don't undo anything listed under Decisions without asking whoever made it. When a PR makes a
-  lasting decision, add a dated line to Decisions in the same PR (project decisions under "This project" below).
-- **Talk directly, not only in a PR,** before: a launch; a new Function, outside service or key; a change to a
-  template-owned file; an editorial or design call on someone else's page (headlines, titles, descriptions, colors,
-  layout); anything that changes what readers see on a page someone else is working on.
-- **Every PR description says what changed and why,** and how it was tested: it's the record the next person reads.
 
 ## Decisions (all interactives)
 - 2026-10-29 · nysfocus.com is the brand's source of truth (colors, fonts, footer), not the Canva kit. Kyle
@@ -57,8 +58,12 @@ Several people, each with their own Claude, build and change interactives indepe
   left and a yellow rule along the bottom; one per page where pages differ. Kyle
 - 2026-10-29 · What readers type never goes from the browser to an outside service; it goes through the project's own
   Functions (Kyle approves each one). Kyle
+- 2026-10-29 · The header is the website's, as-is, kept in sync with the footer; `brand/header.js` replaces the site's
+  JS for its menu, search and shrink-on-scroll. Kyle
+- 2026-10-29 · Anyone may change any part of a project (growth, editorial, leadership); people decide when to loop each
+  other in, and every change is logged (PR description, and Decisions for lasting calls). Kyle
 
 <!-- nyf-template-sync: everything above this line comes from nyf-interactive-template (npm run template:sync replaces it); everything below is this project's own. -->
 ## This project
-This is the template itself. A project describes itself here: who owns it, how it's built, and its own decisions
+This is the template itself. A project describes itself here: who works on it, how it's built, and its own decisions
 (dated, with who made them).

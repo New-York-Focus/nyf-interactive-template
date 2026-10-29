@@ -79,12 +79,13 @@ for (const f of pages(dir)) {
   if (!html.includes('href="https://cloud.typography.com/14378/7423632/css/fonts.css"')) fail(f, "missing the font kit <link> (https://cloud.typography.com/14378/7423632/css/fonts.css)");
 }
 
-// The nysfocus.com footer and the shared <head> tags (Wisepops, icons, social), exactly as in brand/ (npm run build puts
-// them there), on every page and 404.html.
-const footer = footerBlock(), head = headBlock();
+// The nysfocus.com header and footer and the shared <head> tags (Wisepops, icons, social), exactly as in brand/ (npm run
+// build puts them there), on every page and 404.html.
+const footer = footerBlock("footer"), header = footerBlock("header"), head = headBlock();
 for (const f of htmlFiles(dir)) {
   const html = read(f);
   if (!html.includes(footer)) fail(f, "missing the nysfocus.com footer, or it was edited (run npm run build)");
+  if (!html.includes(header)) fail(f, "missing the nysfocus.com header, or it was edited (run npm run build)");
   const i = html.indexOf(head);
   if (i < 0 || i > html.search(/<\/head>/i)) fail(f, "missing the shared <head> tags from brand/head.html, or they were edited (run npm run build)");
 }

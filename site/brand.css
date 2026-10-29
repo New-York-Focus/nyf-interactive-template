@@ -1,0 +1,25 @@
+/* New York Focus brand: the colors and type of nysfocus.com (from its stylesheet, 2026-10-29). Link this from every page,
+   with the font kit before it:
+     <link rel="stylesheet" href="https://cloud.typography.com/14378/7423632/css/fonts.css">
+   The fonts are licensed for nysfocus.com: they load on nysfocus.com/interactives/…, not on pages.dev previews, which
+   show the fallbacks. Use the variables rather than copying values, so the interactives change together. */
+:root {
+  /* Colors */
+  --nyf-yellow: #f8bc47;        /* the brand yellow: logo, buttons, highlights */
+  --nyf-yellow-light: #f8cd79;
+  --nyf-cream: #fdf2dd;         /* yellow tint for backgrounds */
+  --nyf-ink: #0c2329;           /* text */
+  --nyf-navy: #051d41;          /* footer and dark panels */
+  --nyf-blue: #0e4cab;
+  --nyf-red: #cc0000;
+  --nyf-lavender: #a5a2bf;
+  --nyf-grey: #666666;
+  --nyf-grey-dark: #4b4b4b;
+  --nyf-white: #ffffff;
+
+  /* Type: Knockout for headlines, labels and buttons (uppercase on the site), Chronicle for reading text */
+  --nyf-font-headline: "Knockout 54 A", "Knockout 54 B", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --nyf-font-sans: "Knockout 32 A", "Knockout 32 B", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --nyf-font-display: "Chronicle Display A", "Chronicle Display B", Georgia, "Times New Roman", serif;
+  --nyf-font-serif: "Chronicle Text G1 A", "Chronicle Text G1 B", Georgia, "Times New Roman", serif;
+}

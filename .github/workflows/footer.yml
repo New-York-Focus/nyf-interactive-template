@@ -1,0 +1,36 @@
+# Daily: is brand/footer.html (and its CSS) still the same as the footer on nysfocus.com? If not, open an issue so someone
+# runs `npm run footer:sync`, checks the result and opens a PR. Run it by hand from the Actions tab too.
+name: Footer sync check
+
+on:
+  schedule:
+    - cron: "23 14 * * *"   # 10:23 a.m. New York (EDT)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  footer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - id: check
+        run: npm run footer:check
+        continue-on-error: true
+      - if: steps.check.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Footer differs from nysfocus.com"
+          if [ -z "$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[].number')" ]; then
+            gh issue create --title "$title" --body "The daily check found that the footer on nysfocus.com changed (or couldn't be read: see the [run]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)).
+
+          To update: \`npm run footer:sync\`, then \`npm test\`, look at a page, commit \`brand/\` and \`site/\` and open a PR."
+          fi
+          exit 1

@@ -24,8 +24,23 @@ Start every reader-facing interactive from this repo. Each one is published at
   `interactive.json`. Functions must be GET only and must never log what readers type.
 - **No keys or tokens in the repo.** Kyle enters secrets in Cloudflare himself.
 - **Analytics** on every page: the Plausible script and the Google Tag Manager snippet, exactly as in `site/index.html` (the same as nysfocus.com).
+- **Brand fonts** on every page: the nysfocus.com font kit `<link>`, as in `site/index.html`.
+- **The nysfocus.com footer** on every page and `404.html`, exactly as in `brand/`. `npm run build` puts it there; don't edit it in the pages.
 
 Not checked automatically, but expected: a `share.png` (1200×630) referenced by `og:image`, and a page that works at phone width.
+
+## Brand: colors, fonts and the footer
+- **Colors and fonts:** `site/brand.css` has the nysfocus.com colors and type as CSS variables (`--nyf-yellow`, `--nyf-ink`,
+  `--nyf-font-headline`, `--nyf-font-serif`…). Link the font kit and `brand.css` from every page, as `site/index.html`
+  does, and style with the variables. The fonts (Knockout and Chronicle, from Hoefler&Co) are licensed for nysfocus.com:
+  they load on `nysfocus.com/interactives/…` but not on `pages.dev` previews, which show the fallbacks.
+- **Footer:** the website's footer, as-is, at the end of every page. `brand/footer.html` is the website's `<footer>` with
+  links made absolute; `brand/footer.css` is the website's own CSS rules for it, scoped to `.nyf-footer` after a reset, so
+  the footer and the interactive can't restyle each other. `npm run build` (part of `npm test`) inserts both before
+  `</body>` on every page, between `<!-- nyf-footer… -->` and `<!-- /nyf-footer -->`.
+- **Keeping it in sync:** when the website's footer changes, run `npm run footer:sync`, then `npm test`, look at a page and
+  open a PR with `brand/` and `site/`. The "Footer sync check" GitHub Action compares the two every morning and opens an
+  issue when they differ (run it by hand from the Actions tab too).
 
 ## Cloudflare Pages settings (Kyle creates the project)
 Workers & Pages › Create application › Pages › **Connect to Git** (never direct upload: a direct-upload project can't be

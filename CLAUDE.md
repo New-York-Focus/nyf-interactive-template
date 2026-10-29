@@ -17,5 +17,7 @@ has the full checklist and setup; this file is the short version for Claude.
   readers type (queries, addresses, URLs, bodies). Log the provider and status only.
 - Brand: style with the variables in `site/brand.css`, and keep the font kit `<link>` on every page. The nysfocus.com footer
   comes from `brand/` (`npm run build` inserts it); never edit it in the pages. Update it with `npm run footer:sync`.
+- The shared `<head>` tags (Wisepops, icons, social) come from `brand/head.html`, inserted by `npm run build`; edit them
+  there, never in the pages.
 - Every page keeps the analytics block from the template (Plausible and Google Tag Manager, the same as nysfocus.com). Don't add other trackers, ad scripts or third-party embeds without asking.
 - Don't change `nyf-interactives` from here. Launches and routing are PRs there, reviewed by Kyle.

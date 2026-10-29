@@ -23,11 +23,16 @@ Start every reader-facing interactive from this repo. Each one is published at
 - **Static only.** A Pages Function (`functions/`) needs Kyle's approval first. After approval, set `"functions": true` in
   `interactive.json`. Functions must be GET only and must never log what readers type.
 - **No keys or tokens in the repo.** Kyle enters secrets in Cloudflare himself.
-- **Analytics** on every page: the Plausible script and the Google Tag Manager snippet, exactly as in `site/index.html` (the same as nysfocus.com).
+- **Analytics** on every page: the Plausible script (tagged `event-category="Interactives"`, so interactives can be filtered in
+  Plausible like article categories) and the Google Tag Manager snippet, exactly as in `site/index.html`.
 - **Brand fonts** on every page: the nysfocus.com font kit `<link>`, as in `site/index.html`.
 - **The nysfocus.com footer** on every page and `404.html`, exactly as in `brand/`. `npm run build` puts it there; don't edit it in the pages.
+- **The shared head tags** on every page and `404.html`, exactly as in `brand/head.html`: Wisepops (the newsletter and donation
+  popups on nysfocus.com; which campaigns show where is set in Wisepops), the site's icons, the social tags that are the
+  same on every page (`og:site_name`, `twitter:site`…) and a font preconnect. `npm run build` puts them before `</head>`.
 
-Not checked automatically, but expected: a `share.png` (1200×630) referenced by `og:image`, and a page that works at phone width.
+Not checked automatically, but expected: a `share.png` (1200×630) referenced by `og:image`, with `og:image:alt` and
+`twitter:image:alt` describing it, and a page that works at phone width.
 
 ## Brand: colors, fonts and the footer
 - **Colors and fonts:** `site/brand.css` has the nysfocus.com colors and type as CSS variables (`--nyf-yellow`, `--nyf-ink`,

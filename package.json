@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/footer.mjs inject site && node scripts/build-sitemap.mjs site",
+    "build": "node scripts/head.mjs site && node scripts/footer.mjs inject site && node scripts/build-sitemap.mjs site",
     "check": "node scripts/check.mjs site",
     "test": "npm run build && npm run check",
     "footer:sync": "node scripts/footer.mjs sync",

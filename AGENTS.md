@@ -33,8 +33,10 @@ people decide among themselves when to loop each other in. What keeps everyone, 
 change is logged in the repo:
 - **Start every session up to date:** `git checkout main && git pull`, then read what changed since you last worked
   (`git log --oneline -15`, the descriptions of the merged PRs, and Decisions below). Work on your own branch and open a
-  PR. Anyone may merge any PR once its checks pass and it's up to date with `main` (no conflicts): a merge to `main`
-  publishes to readers, so check the live page afterwards.
+  PR. A person may merge any PR once its checks pass and it's up to date with `main` (no conflicts): a New York Focus
+  staff member, or, on a project done with a third party, someone from that partner working on it. No AI tool (Claude
+  Code, ChatGPT Codex or any other) merges on its own: only when one of those people explicitly tells it to. A merge to `main` publishes to readers, so
+  check the live page afterwards.
 - **Every PR description says what changed and why,** and how it was tested: it's the record the next person reads.
 - **Log lasting decisions.** When a PR makes a lasting call (a design, wording, data or technical choice others should
   keep), add a dated line with who made it to Decisions in the same PR (project decisions under "This project" below).
@@ -64,8 +66,9 @@ change is logged in the repo:
   Up), kept in sync with the footer; `brand/header.js` replaces the site's JS for its menu. Kyle
 - 2026-10-29 · Anyone may change any part of a project (growth, editorial, leadership); people decide when to loop each
   other in, and every change is logged (PR description, and Decisions for lasting calls). Kyle
-- 2026-10-29 · Anyone may merge any PR once its checks pass and it's up to date with `main`; no one waits on anyone's
-  approval. Kyle
+- 2026-10-29 · Any New York Focus staff member (or, on a project with a third party, someone from that partner) may merge
+  any PR once its checks pass and it's up to date with `main`; no one waits on anyone's approval. An AI tool (Claude
+  Code, Codex or any other) merges only when one of those people explicitly tells it to. Kyle
 - 2026-10-29 · `AGENTS.md` is the agents' instructions, read by every tool; `CLAUDE.md` only imports it (`@AGENTS.md`). Kyle
 
 <!-- nyf-template-sync: everything above this line comes from nyf-interactive-template (npm run template:sync replaces it); everything below is this project's own. -->

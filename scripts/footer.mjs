@@ -22,8 +22,10 @@ const PARTS = {
     end: "<!-- /nyf-header -->",
     // Classes the site's scripts add at run time (brand/header.js does it here), so their rules are kept too
     runtime: ["smaller", "menuopen", "menuclosed", "whitesvg", "hidden", "block"],
-    // The short header is 52px tall; the full header's spacer (75px, 163px on desktop) would leave a gap under it
-    extra: ".nyf-header nav>div:not(.navbar){height:52px;padding-bottom:0}" },
+    // The short header is 52px tall; the full header's spacer (75px, 163px on desktop) would leave a gap under it. Its
+    // fixed bar sets no top or left (the site's <body> has no margin or padding), so it's pinned here for pages that do.
+    extra: ".nyf-header nav>div:not(.navbar){height:52px;padding-bottom:0}"
+      + ".nyf-header nav>div:not(.navbar)>.fixed{top:0;left:0;right:0}" },
 };
 
 async function get(url) {

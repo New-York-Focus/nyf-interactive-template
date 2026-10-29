@@ -52,11 +52,11 @@ Not checked automatically, but expected: `twitter:image:alt` (the same as `og:im
   links made absolute; `brand/footer.css` is the website's own CSS rules for it, scoped to `.nyf-footer` after a reset, so
   the footer and the interactive can't restyle each other. `npm run build` (part of `npm test`) inserts both before
   `</body>` on every page, between `<!-- nyf-footer… -->` and `<!-- /nyf-footer -->`.
-- **Header:** the website's header, as-is, at the start of every page, the same way: `brand/header.html` and
-  `brand/header.css`, scoped to `.nyf-header`, between `<!-- nyf-header… -->` and `<!-- /nyf-header -->`. On the site its
-  menu, search box and shrink-on-scroll run on the site's JS bundle, which interactives don't load; `brand/header.js`
-  does the same in a few lines (the sync turns the menu's Alpine.js attributes into `data-nyf-*` ones it reads). Its
-  search goes to nysfocus.com's own search, as on the site.
+- **Header:** the short version of the website's header (the bar it shows once you scroll: logo, menu, Donate and
+  Sign Up) at the start of every page, the same way as the footer: `brand/header.html` and `brand/header.css`, scoped to
+  `.nyf-header`, between `<!-- nyf-header… -->` and `<!-- /nyf-header -->`. On the site its menu runs on the site's JS
+  bundle, which interactives don't load; `brand/header.js` does the same in a few lines (the sync turns the menu's
+  Alpine.js attributes into `data-nyf-*` ones it reads).
 - **Keeping them in sync:** when the website's header or footer changes, run `npm run footer:sync`, then `npm test`, look
   at a page and open a PR with `brand/` and `site/`. The "Footer sync check" GitHub Action compares them every morning and
   opens an issue when they differ (run it by hand from the Actions tab too).

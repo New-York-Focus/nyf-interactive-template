@@ -1,28 +1,17 @@
-// What the site's JS bundle does for its header, which interactives don't load (npm run build puts this in each page):
-// the menu button, the search box that opens on click, and the smaller header once the reader scrolls 50px.
+// The header's menu button, which runs on the site's JS bundle (Alpine.js); interactives don't load it, so this does the
+// same (npm run build puts it in each page). The sync turns the site's :class attributes into data-nyf-open and
+// data-nyf-closed: the classes an element has when the menu is open or closed.
 (() => {
-  const root = document.currentScript.closest(".nyf-header"), header = root.querySelector("header");
+  const root = document.currentScript.closest(".nyf-header");
   let open = false;
-  const swap = (el, off, on) => {
-    (el.dataset[off] || "").split(" ").filter(Boolean).forEach((c) => el.classList.remove(c));
-    (el.dataset[on] || "").split(" ").filter(Boolean).forEach((c) => el.classList.add(c));
-  };
   const show = () => {
-    root.querySelectorAll("[data-nyf-open], [data-nyf-closed]").forEach((el) => swap(el, open ? "nyfClosed" : "nyfOpen", open ? "nyfOpen" : "nyfClosed"));
+    root.querySelectorAll("[data-nyf-open], [data-nyf-closed]").forEach((el) => {
+      const [off, on] = open ? [el.dataset.nyfClosed, el.dataset.nyfOpen] : [el.dataset.nyfOpen, el.dataset.nyfClosed];
+      (off || "").split(" ").filter(Boolean).forEach((c) => el.classList.remove(c));
+      (on || "").split(" ").filter(Boolean).forEach((c) => el.classList.add(c));
+    });
     root.querySelectorAll("[data-nyf-toggle]").forEach((b) => b.setAttribute("aria-expanded", open));
   };
   show();
-  root.querySelectorAll("[data-nyf-toggle]").forEach((button) => button.addEventListener("click", () => {
-    open = !open;
-    show();
-  }));
-  root.querySelectorAll(".expandsearch").forEach((link) => link.addEventListener("click", (e) => {
-    e.preventDefault();
-    root.querySelectorAll(".query").forEach((q) => { q.style.display = ""; if (getComputedStyle(q).display === "none") q.style.display = "block"; });
-    root.querySelector(".query")?.focus();
-    link.style.display = "none";
-  }));
-  const shrink = () => header.classList.toggle("smaller", window.scrollY >= 50);
-  window.addEventListener("scroll", shrink, { passive: true });
-  shrink();
+  root.querySelectorAll("[data-nyf-toggle]").forEach((b) => b.addEventListener("click", () => { open = !open; show(); }));
 })();

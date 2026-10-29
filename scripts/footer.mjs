@@ -5,8 +5,9 @@
 //                                               404.html (part of npm run build)
 // The markup is the website's <header> and <footer> as-is, with links made absolute. Their styles are the website's own
 // CSS rules that apply to them, scoped to .nyf-header and .nyf-footer, after a reset, so they and the interactive can't
-// restyle each other. The header's menu, search and shrink-on-scroll run on the site's JS bundle, which interactives don't
-// load: brand/header.js does the same in a few lines.
+// restyle each other. Interactives use the header's short version (the bar the site shows once you scroll): the logo,
+// the menu, Donate and Sign Up. Its menu runs on the site's JS bundle, which interactives don't load: brand/header.js
+// does the same in a few lines.
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { htmlFiles } from "./pages.mjs";
@@ -20,7 +21,9 @@ const PARTS = {
     start: "<!-- nyf-header: the nysfocus.com header, from brand/ by npm run build. Don't edit here; run npm run footer:sync. -->",
     end: "<!-- /nyf-header -->",
     // Classes the site's scripts add at run time (brand/header.js does it here), so their rules are kept too
-    runtime: ["smaller", "menuopen", "menuclosed", "whitesvg", "hidden", "block"] },
+    runtime: ["smaller", "menuopen", "menuclosed", "whitesvg", "hidden", "block"],
+    // The short header is 52px tall; the full header's spacer (75px, 163px on desktop) would leave a gap under it
+    extra: ".nyf-header nav>div:not(.navbar){height:52px;padding-bottom:0}" },
 };
 
 async function get(url) {
@@ -113,8 +116,10 @@ function partHtml(home, tag) {
 
 // The header's menu runs on Alpine.js on the site. Its attributes become data-nyf-* ones that brand/header.js reads:
 // :class="{ 'a': !open, 'b': open }" → data-nyf-closed="a" data-nyf-open="b"; @click="open = !open" → data-nyf-toggle.
+// The site adds "smaller" to <header> once the reader scrolls; here it is always there, for the short version.
 function headerHtml(home) {
   return partHtml(home, "header")
+    .replace(/<header class="([^"]*)"/, (_, c) => `<header class="${c} smaller"`)
     .replace(/\s:class="\{([^"]*)\}"/g, (_, body) => {
       const closed = [], open = [];
       for (const [, cls, neg] of body.matchAll(/'([^']*)':\s*(!?)open/g)) (neg ? closed : open).push(cls);
@@ -139,7 +144,7 @@ async function fromWebsite() {
 export function block(name = "footer") {
   const p = PARTS[name], cls = p.scope.slice(1);
   const js = p.js ? `\n<script>${readFileSync(p.js, "utf8").trim()}</script>` : "";
-  return `${p.start}\n<div class="${cls}">\n<style>${readFileSync(p.css, "utf8").trim()}</style>\n${readFileSync(p.html, "utf8").trim()}${js}\n</div>\n${p.end}`;
+  return `${p.start}\n<div class="${cls}">\n<style>${readFileSync(p.css, "utf8").trim()}${p.extra || ""}</style>\n${readFileSync(p.html, "utf8").trim()}${js}\n</div>\n${p.end}`;
 }
 const blockRe = (p) => new RegExp(`${p.start.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[\\s\\S]*?${p.end}`);
 

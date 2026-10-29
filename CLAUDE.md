@@ -58,8 +58,8 @@ change is logged in the repo:
   left and a yellow rule along the bottom; one per page where pages differ. Kyle
 - 2026-10-29 · What readers type never goes from the browser to an outside service; it goes through the project's own
   Functions (Kyle approves each one). Kyle
-- 2026-10-29 · The header is the website's, as-is, kept in sync with the footer; `brand/header.js` replaces the site's
-  JS for its menu, search and shrink-on-scroll. Kyle
+- 2026-10-29 · The header is the website's short version (the bar it shows once you scroll: logo, menu, Donate, Sign
+  Up), kept in sync with the footer; `brand/header.js` replaces the site's JS for its menu. Kyle
 - 2026-10-29 · Anyone may change any part of a project (growth, editorial, leadership); people decide when to loop each
   other in, and every change is logged (PR description, and Decisions for lasting calls). Kyle
 

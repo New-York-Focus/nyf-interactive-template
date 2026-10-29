@@ -103,9 +103,9 @@ else {
 if (!existsSync(`${dir}/_headers`) || !/^\/\*\s*\n\s+X-Robots-Tag:\s*noindex/im.test(read("_headers"))) fail("_headers", "must start with /* and X-Robots-Tag: noindex");
 if (!existsSync(`${dir}/404.html`)) fail("404.html", "missing");
 
-// 6. Static unless Kyle approved a Function (set "functions": true in interactive.json only after that approval).
+// 6. Static unless the project declares its Functions ("functions": true in interactive.json), so none is added by accident.
 const fnDirs = ["functions", `${dir}/functions`].filter((d) => existsSync(d) && readdirSync(d).length);
-if (fnDirs.length && cfg.functions !== true) fail(fnDirs[0], "Functions need Kyle's approval first (then set \"functions\": true in interactive.json)");
+if (fnDirs.length && cfg.functions !== true) fail(fnDirs[0], "this project has Functions: declare them with \"functions\": true in interactive.json (their rules are in CLAUDE.md)");
 for (const d of fnDirs) {
   const walk = (p) => readdirSync(p, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walk(`${p}/${e.name}`) : [`${p}/${e.name}`]);
   for (const f of walk(d).filter((f) => /\.(m?js|ts)$/.test(f))) {

@@ -19,5 +19,7 @@ has the full checklist and setup; this file is the short version for Claude.
   comes from `brand/` (`npm run build` inserts it); never edit it in the pages. Update it with `npm run footer:sync`.
 - The shared `<head>` tags (Wisepops, icons, social) come from `brand/head.html`, inserted by `npm run build`; edit them
   there, never in the pages.
+- Never launch a page without an SEO `<title>` within 580px, a meta description within 920px, and a 1200×630 link-card
+  image (`og:image`, with alt text) of its own; `npm test` enforces these, and the placeholder `share.png` doesn't count.
 - Every page keeps the analytics block from the template (Plausible and Google Tag Manager, the same as nysfocus.com). Don't add other trackers, ad scripts or third-party embeds without asking.
 - Don't change `nyf-interactives` from here. Launches and routing are PRs there, reviewed by Kyle.

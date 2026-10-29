@@ -31,8 +31,16 @@ Start every reader-facing interactive from this repo. Each one is published at
   popups on nysfocus.com; which campaigns show where is set in Wisepops), the site's icons, the social tags that are the
   same on every page (`og:site_name`, `twitter:site`…) and a font preconnect. `npm run build` puts them before `</head>`.
 
-Not checked automatically, but expected: a `share.png` (1200×630) referenced by `og:image`, with `og:image:alt` and
-`twitter:image:alt` describing it, and a page that works at phone width.
+- **Search and link cards, on every page** (a project can't launch without them):
+  - a `<title>` no wider than **580px** in Google's results (20px Arial), and a `<meta name="description">` no wider than
+    **920px** (14px Arial). `npm test` measures both and prints the width. No two pages share a title or a description.
+  - a link-card image: `og:image` pointing to a **1200×630 PNG or JPEG** in this project (under 5 MB), with matching
+    `og:image:width` and `og:image:height`, an `og:image:alt` describing it, and `twitter:card` set to `summary_large_image`.
+    `site/share.png` is a placeholder: `npm test` fails if a project still uses it. Make one image per page if the pages
+    differ (the county elections project draws each county's chart); keep text off the image, since platforms show the
+    page title beside it.
+
+Not checked automatically, but expected: `twitter:image:alt` (the same as `og:image:alt`), and a page that works at phone width.
 
 ## Brand: colors, fonts and the footer
 - **Colors and fonts:** `site/brand.css` has the nysfocus.com colors and type as CSS variables (`--nyf-yellow`, `--nyf-ink`,

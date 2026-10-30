@@ -42,3 +42,45 @@
 @media (min-width: 768px) { :root { --nyf-section: 48px; } }
 @media (min-width: 1024px) { :root { --nyf-gutter: 32px; } }
 @media (min-width: 1280px) { :root { --nyf-gutter: 40px; } }
+
+/* Shared pieces, measured on nysfocus.com (2026-10-30). Each applies only where a page uses its class. */
+/* The wide page frame for data pages (the site's 1366px container): <main class="nyf-wide">. Article-like pages keep a
+   narrow reading column. */
+.nyf-wide { max-width: 1366px; }
+/* A section header: the site's full-width yellow bar, <h2 class="nyf-section-bar">. It reaches into the gutter on both
+   sides, so put it inside a container padded by --nyf-gutter (as main is); its label lines up with the text. */
+.nyf-section-bar {
+  background: var(--nyf-yellow);
+  color: var(--nyf-ink);
+  padding: 12px var(--nyf-gutter);
+  margin: var(--nyf-section) calc(-1 * var(--nyf-gutter)) var(--nyf-space-2);
+  font: 400 24px/1 var(--nyf-font-headline);
+  text-transform: uppercase;
+}
+/* The dek, right under the headline: <h1>…</h1><p class="nyf-dek">…</p> */
+h1:has(+ .nyf-dek) { margin-bottom: 0; }
+.nyf-dek {
+  margin: var(--nyf-space-2) 0 var(--nyf-space-4);
+  max-width: 43rem;
+  font: 400 20px/1.4 var(--nyf-font-serif);
+}
+/* A label above a list ("Races to Watch"): reads as a label, not another headline */
+.nyf-label {
+  margin: 0 0 var(--nyf-space-2);
+  font: 400 15px/1.2 var(--nyf-font-sans);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--nyf-grey-dark);
+}
+.nyf-label::before {
+  content: "";
+  display: block;
+  width: var(--nyf-space-4);
+  height: 3px;
+  margin-bottom: var(--nyf-space-1);
+  background: var(--nyf-yellow);
+}
+@media (min-width: 768px) {
+  .nyf-section-bar { font-size: 30px; margin-bottom: var(--nyf-space-6); }
+  .nyf-dek { font-size: 23px; margin-bottom: var(--nyf-space-6); }
+}

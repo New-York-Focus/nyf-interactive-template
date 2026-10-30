@@ -25,7 +25,15 @@ If I already gave any of these in my message, don't ask again.
 1. **Set up the repo.** It should be `New-York-Focus/nyf-<slug>`, created from the template.
    - If it doesn't exist yet and you can use `gh`, create it with
      `gh repo create New-York-Focus/nyf-<slug> --template New-York-Focus/nyf-interactive-template --private --clone`.
-   - If you can't create it, tell me to click "Use this template" on the template's GitHub page, and wait for me.
+   - If you can't create it, give me these steps, and wait for me:
+     1. Open https://github.com/New-York-Focus/nyf-interactive-template and click **Use this template › Create a new
+        repository**.
+     2. Under **Owner**, switch from your own account to **New-York-Focus**. GitHub picks your personal account by
+        default, and a repo there can't be connected to our Cloudflare or seen by the team.
+     3. Name it `nyf-<slug>`, choose **Private**, and click **Create repository**.
+   - Check the repo's owner before going on: its address must start with `github.com/New-York-Focus/`. If it was made
+     under a personal account, tell me to move it (the repo's **Settings › General › Danger Zone › Transfer ownership**,
+     to New-York-Focus) or to delete it and create it again under New-York-Focus.
    - Then work only in the new repo. Its first commit deletes `NEW-INTERACTIVE.md`, which comes with the template.
 2. **Read `AGENTS.md` and `README.md` in full.** They are this project's instructions, whatever tool you are
    (`CLAUDE.md` just imports `AGENTS.md`). They hold the rules, the brand and SEO standards, the Decisions everyone

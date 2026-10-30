@@ -10,6 +10,20 @@ import { TITLE, DESCRIPTION, IMAGE, width, decode, imageSize } from "./seo.mjs";
 // The template's placeholder site/share.png: a launched project must replace it with its own.
 const PLACEHOLDER_IMAGE = "6470030c5107f7f3ab059678f10b1a4fd8580d4a0f1742449b2ef1a89925949a";
 
+// JSON with comments and trailing commas (wrangler.jsonc).
+function jsonc(text) {
+  let out = "", inStr = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inStr) { out += c; if (c === "\\") out += text[++i]; else if (c === '"') inStr = false; }
+    else if (c === '"') { inStr = true; out += c; }
+    else if (c === "/" && text[i + 1] === "/") { while (i < text.length && text[i] !== "\n") i++; out += "\n"; }
+    else if (c === "/" && text[i + 1] === "*") { i = text.indexOf("*/", i + 2) + 1; }
+    else out += c;
+  }
+  return JSON.parse(out.replace(/,(\s*[}\]])/g, "$1"));
+}
+
 const dir = process.argv[2] || "site";
 const cfg = config(process.argv[3]);
 const problems = [];
@@ -99,22 +113,52 @@ else {
   for (const u of listed) if (!expected.has(u)) fail("sitemap.xml", `lists ${u}, which is not a page`);
 }
 
-// pages.dev copies stay out of search; the nyf-interactives Worker removes this header on nysfocus.com.
+// workers.dev and pages.dev copies stay out of search; the nyf-interactives Worker removes this header on nysfocus.com.
 if (!existsSync(`${dir}/_headers`) || !/^\/\*\s*\n\s+X-Robots-Tag:\s*noindex/im.test(read("_headers"))) fail("_headers", "must start with /* and X-Robots-Tag: noindex");
 if (!existsSync(`${dir}/404.html`)) fail("404.html", "missing");
 
-// 6. Static unless the project declares its Functions ("functions": true in interactive.json), so none is added by accident.
-const fnDirs = ["functions", `${dir}/functions`].filter((d) => existsSync(d) && readdirSync(d).length);
-if (fnDirs.length && cfg.functions !== true) fail(fnDirs[0], "this project has Functions: declare them with \"functions\": true in interactive.json (their rules are in AGENTS.md)");
-for (const d of fnDirs) {
-  const walk = (p) => readdirSync(p, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walk(`${p}/${e.name}`) : [`${p}/${e.name}`]);
-  for (const f of walk(d).filter((f) => /\.(m?js|ts)$/.test(f))) {
+// 6. Hosting: a Cloudflare Worker with static assets (new projects), or a Pages project (2026-county-elections).
+const walk = (p) => readdirSync(p, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walk(`${p}/${e.name}`) : [`${p}/${e.name}`]);
+// Server code follows the rules in AGENTS.md: reader routes GET only, writes behind a secret token, never log what readers
+// type or what's posted, no keys in the code.
+function checkServerCode(files, { writes }) {
+  for (const f of files.filter((f) => /\.(m?js|ts)$/.test(f))) {
     const src = readFileSync(f, "utf8");
-    // Never log what readers type: no logging of the request, its URL or its query.
     for (const m of src.matchAll(/console\.\w+\(([^)]*)\)/g)) if (/request|url|searchParams|\bq\b|query|address|body/i.test(m[1])) fail(f, `logs reader input? ${m[0].slice(0, 80)}`);
-    if (/onRequest(Post|Put|Patch|Delete)\b/.test(src)) fail(f, "Functions are GET only");
+    if (/(api[_-]?key|secret|token)\s*[:=]\s*["'][A-Za-z0-9_\-]{16,}["']/i.test(src)) fail(f, "looks like it contains a key or token");
+    writes(f, src);
   }
 }
+const fnDirs = ["functions", `${dir}/functions`].filter((d) => existsSync(d) && readdirSync(d).length);
+if (cfg.worker) {
+  if (!/^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(cfg.worker)) fail("interactive.json", "worker must be lowercase letters, digits and hyphens");
+  if (fnDirs.length) fail(fnDirs[0], "Pages Functions don't run on a Worker: put server code in worker/ and set main in wrangler.jsonc");
+  const w = existsSync("wrangler.jsonc") ? jsonc(readFileSync("wrangler.jsonc", "utf8")) : null;
+  if (!w) fail("wrangler.jsonc", "missing (the Worker's settings)");
+  else {
+    if (w.name !== cfg.worker) fail("wrangler.jsonc", `name must be "${cfg.worker}", the worker in interactive.json`);
+    if (!/^\.?\/?site\/?$/.test(w.assets?.directory || "")) fail("wrangler.jsonc", `assets.directory must be "site"`);
+    if (w.assets?.not_found_handling !== "404-page") fail("wrangler.jsonc", `assets.not_found_handling must be "404-page" (404.html for unknown paths)`);
+    if ((w.assets?.html_handling || "auto-trailing-slash") !== "auto-trailing-slash") fail("wrangler.jsonc", `assets.html_handling must be "auto-trailing-slash": every page is a folder`);
+    if (w.workers_dev === false || w.preview_urls === false) fail("wrangler.jsonc", "keep workers_dev and preview_urls on: the <slug>-test address serves a Preview");
+    if (w.main) {
+      if (!existsSync(w.main)) fail("wrangler.jsonc", `main ${w.main} doesn't exist`);
+      else if (w.main.replace(/^\.\//, "").startsWith("site/")) fail("wrangler.jsonc", "main must be outside site/: site/ holds only static files");
+      else {
+        const mainDir = w.main.replace(/^\.\//, "").split("/").slice(0, -1).join("/");
+        checkServerCode(mainDir ? walk(mainDir) : [w.main], { writes: (f, src) => {
+        // A route that writes (an ingest, an admin action) checks a secret token, set as a Worker secret.
+        if (/["'](POST|PUT|PATCH|DELETE)["']/.test(src) && !(/authorization/i.test(src) && /env\.[A-Z0-9_]*(TOKEN|SECRET)/.test(src)))
+          fail(f, "a route that writes must check a secret token (the Authorization header against an env secret)");
+        } });
+      }
+    }
+  }
+} else if (cfg.pagesProject) {
+  // Pages: static unless the project declares its Functions ("functions": true in interactive.json).
+  if (fnDirs.length && cfg.functions !== true) fail(fnDirs[0], "this project has Functions: declare them with \"functions\": true in interactive.json (their rules are in AGENTS.md)");
+  for (const d of fnDirs) checkServerCode(walk(d), { writes: (f, src) => { if (/onRequest(Post|Put|Patch|Delete)\b/.test(src)) fail(f, "Functions are GET only"); } });
+} else fail("interactive.json", "needs worker, the Cloudflare Worker's name (a Pages project has pagesProject instead)");
 // Secrets never go in the repo.
 for (const f of htmlFiles(dir)) if (/(api[_-]?key|secret|token)\s*[:=]\s*["'][A-Za-z0-9_\-]{16,}["']/i.test(read(f))) fail(f, "looks like it contains a key or token");
 

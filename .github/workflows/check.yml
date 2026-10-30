@@ -1,4 +1,4 @@
-# Runs the editor checklist on every pull request and push to main. Cloudflare Pages builds the site itself;
+# Runs the editor checklist on every pull request and push to main. Cloudflare (Workers Builds) builds and deploys;
 # this only fails a PR that would break under nysfocus.com/interactives/<slug>/ or break the newsroom's rules.
 name: Checklist
 

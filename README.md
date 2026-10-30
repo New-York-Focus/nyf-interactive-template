@@ -5,6 +5,8 @@ Start every reader-facing interactive from this repo. Each one is published at
 `https://nysfocus.com/interactives/<slug>/` through the `nyf-interactives` Worker, from its own Cloudflare Pages project.
 
 ## Start a project
+The quickest way: open an AI agent session (Claude Code, Codex) on this repo and say "start a new interactive"; it follows
+`NEW-INTERACTIVE.md`. By hand:
 1. Create a repo from this template, named `nyf-<slug>` (e.g. `nyf-2026-county-elections`).
 2. Edit `interactive.json`: `slug` (the address after `/interactives/`), `pagesProject` (the Pages project name, normally the
    repo name) and `title`. Then search the repo for `example-interactive` and replace it with your slug.

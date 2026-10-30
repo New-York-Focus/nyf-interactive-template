@@ -55,8 +55,10 @@ The quickest way: open an AI agent session (Claude Code, Codex) on this repo and
 Not checked automatically, but expected: `twitter:image:alt` (the same as `og:image:alt`), and a page that works at phone width.
 
 ## Brand: colors, fonts, the header and the footer
-- **Colors and fonts:** `site/brand.css` has the nysfocus.com colors and type as CSS variables (`--nyf-yellow`, `--nyf-ink`,
-  `--nyf-font-headline`, `--nyf-font-serif`…). Link the font kit and `brand.css` from every page, as `site/index.html`
+- **Colors, fonts and spacing:** `site/brand.css` has the nysfocus.com colors, type and spacing as CSS variables
+  (`--nyf-yellow`, `--nyf-ink`, `--nyf-font-headline`, `--nyf-font-serif`…, and the 8px spacing scale `--nyf-space-1`
+  to `--nyf-space-8`, with `--nyf-gutter` and `--nyf-section`, which grow with the screen as the site's do). Space things
+  as the site does: tight inside a group, generous between groups. Link the font kit and `brand.css` from every page, as `site/index.html`
   does, and style with the variables. The fonts (Knockout and Chronicle, from Hoefler&Co) are licensed for nysfocus.com:
   they load on `nysfocus.com/interactives/…` but not on `workers.dev` previews, which show the fallbacks.
 - **Footer:** the website's footer, as-is, at the end of every page. `brand/footer.html` is the website's `<footer>` with

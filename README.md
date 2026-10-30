@@ -15,7 +15,9 @@ The quickest way: open an AI agent session (Claude Code, Codex) on this repo and
    `example-interactive` and replace it with your slug.
 3. Build the site into `site/`: one folder per page, each with an `index.html` (`site/county/erie/index.html` is served at
    `…/<slug>/county/erie/`). Keep data, images, styles and scripts in `site/` too.
-4. `npm test` builds `site/sitemap.xml` and runs the checklist. It must pass; GitHub runs it on every pull request.
+4. `npm test` builds `site/sitemap.xml` and runs the checklist. It must pass; GitHub runs it on every pull request. Until
+   the project has its own link cards, `npm run card:setup` writes a plain setup card so the setup can be committed;
+   `npm test` warns about it, and `npm run check:launch` fails on it.
 5. Ask Kyle to create the Cloudflare Worker (below) and to add the test entry to `nyf-interactives`.
 
 ## The checklist (what `npm test` enforces)
@@ -110,4 +112,5 @@ Each step is a PR in `nyf-interactives` (its `CLAUDE.md` has the details):
 2. Merge to `main` here, so production is deployed (readers can't reach it yet).
 3. Add the service binding for the Worker and change the entry to `{ worker, binding, test: true }`: check
    `<slug>-test` again, now through the path readers will use.
-4. Rename the entry to `<slug>` and remove `test`. That merge is the launch.
+4. Once `npm run check:launch` passes here (every page has its own link card), rename the entry to `<slug>` and remove
+   `test`. That merge is the launch.

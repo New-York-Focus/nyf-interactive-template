@@ -56,6 +56,8 @@ If I already gave any of these in my message, don't ask again.
   - Fill in `interactive.json` (slug, `worker` = the repo name, title) and the same name in `wrangler.jsonc`.
   - Replace `example-interactive` everywhere.
   - Fill in "This project" in `AGENTS.md`: what it is, who works on it, how it's built, and how to rebuild it.
+  - Run `npm run card:setup` for a plain setup card, so `npm test` passes and the setup can be committed right away.
+    Every page needs its own link card before launch: `npm run check:launch` fails on the setup card.
 - **Pages:**
   - The site lives in `site/`, one folder per page (`site/<page>/index.html`), with relative links only.
   - Generate the pages from the data with a script rather than by hand, so anyone can rebuild them.

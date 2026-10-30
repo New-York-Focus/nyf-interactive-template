@@ -37,6 +37,8 @@ directly; Claude Code reads it through `CLAUDE.md`).
   there, never in the pages.
 - Never launch a page without an SEO `<title>` within 580px, a meta description within 920px, and a 1200×630 link-card
   image (`og:image`, with alt text) of its own; `npm test` enforces these, and the placeholder `share.png` doesn't count.
+  A new project's setup commit can use the setup card (`npm run card:setup`): `npm test` only warns about it, and
+  `npm run check:launch`, which must pass before the project's router entry goes live, fails on it.
 - Every page keeps the analytics block from the template (Plausible and Google Tag Manager, the same as nysfocus.com). Don't add other trackers, ad scripts or third-party embeds without asking.
 - Don't change `nyf-interactives` from here. Launches and routing are PRs there, reviewed by Kyle.
 
@@ -88,6 +90,10 @@ change is logged in the repo:
   adds Cron Triggers), reached by the router through a service binding. Reader routes GET only; write routes
   token-protected. `2026-county-elections` stays on Pages. Kyle
 - 2026-10-30 · Slugs for election results: `YYYY-election-results` for generals, `YYYY-primary-results` for primaries. Kyle
+- 2026-10-30 · A new project commits its setup with a plain setup card (`npm run card:setup`), so it needn't wait for its
+  link cards; `npm run check:launch` fails on it, so it never launches. Kyle
+- 2026-10-30 · Link cards for district pages: small districts zoomed in with a state locator, large ones on the state map,
+  New York City districts circled. Kyle
 
 <!-- nyf-template-sync: everything above this line comes from nyf-interactive-template (npm run template:sync replaces it); everything below is this project's own. -->
 ## This project

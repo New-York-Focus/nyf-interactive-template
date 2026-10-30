@@ -6,6 +6,7 @@ import { htmlFiles, pages, pageUrl, config } from "./pages.mjs";
 import { block as footerBlock } from "./footer.mjs";
 import { block as headBlock } from "./head.mjs";
 import { TITLE, DESCRIPTION, IMAGE, width, decode, imageSize } from "./seo.mjs";
+import { SETUP_MARK } from "./card.mjs";
 
 // The template's placeholder site/share.png: a launched project must replace it with its own.
 const PLACEHOLDER_IMAGE = "6470030c5107f7f3ab059678f10b1a4fd8580d4a0f1742449b2ef1a89925949a";
@@ -25,14 +26,18 @@ function jsonc(text) {
 }
 
 const dir = process.argv[2] || "site";
-const cfg = config(process.argv[3]);
+// --launch (npm run check:launch): the check before a project's router entry goes live, which also fails on setup cards.
+const LAUNCH = process.argv.includes("--launch");
+const setupCards = [];
+const cfg = config(process.argv.slice(3).find((a) => !a.startsWith("--")));
 const problems = [];
 const fail = (file, msg) => problems.push(`${file}: ${msg}`);
 const read = (f) => readFileSync(`${dir}/${f}`, "utf8");
 
 // Scripts and styles may contain "/" in code; links in markup are what resolve against the folder.
 const markup = (html) => html.replace(/<script\b[\s\S]*?<\/script>/gi, "").replace(/<style\b[\s\S]*?<\/style>/gi, "");
-const attr = (tag, name) => (tag.match(new RegExp(`\\b${name}\\s*=\\s*["']([^"']*)["']`, "i")) || [])[1];
+// The closing quote matches the opening one: content="New York's races" keeps its apostrophe.
+const attr = (tag, name) => (tag.match(new RegExp(`\\b${name}\\s*=\\s*(["'])([\\s\\S]*?)\\1`, "i")) || [])[2];
 
 for (const f of htmlFiles(dir)) {
   const html = read(f), body = markup(html);
@@ -74,6 +79,11 @@ for (const f of pages(dir)) {
         fail(f, `og:image:width and og:image:height must be ${size.width} and ${size.height}`);
       if (cfg.slug !== "example-interactive" && createHash("sha256").update(readFileSync(file)).digest("hex") === PLACEHOLDER_IMAGE)
         fail(f, "og:image is still the template's placeholder; make a link-card image for this project");
+      // The setup card (npm run card:setup) lets a new project commit before its link cards exist, never launch.
+      if (readFileSync(file).includes(SETUP_MARK)) {
+        if (LAUNCH) fail(f, "og:image is still the setup card; make this page's own link-card image before launch");
+        else setupCards.push(f);
+      }
     }
   }
   if (!content("property", "og:image:alt")) fail(f, 'no <meta property="og:image:alt"> describing the link-card image');
@@ -141,6 +151,11 @@ if (cfg.worker) {
     if (w.assets?.not_found_handling !== "404-page") fail("wrangler.jsonc", `assets.not_found_handling must be "404-page" (404.html for unknown paths)`);
     if ((w.assets?.html_handling || "auto-trailing-slash") !== "auto-trailing-slash") fail("wrangler.jsonc", `assets.html_handling must be "auto-trailing-slash": every page is a folder`);
     if (w.workers_dev === false || w.preview_urls === false) fail("wrangler.jsonc", "keep workers_dev and preview_urls on: the <slug>-test address serves a Preview");
+    // Previews inherit no vars or bindings from production, and Workers Builds' preview command fails without this block.
+    const BINDINGS = ["vars", "kv_namespaces", "d1_databases", "r2_buckets", "services", "durable_objects", "queues",
+      "hyperdrive", "vectorize", "ai", "analytics_engine_datasets", "workflows", "browser", "images"];
+    const bound = BINDINGS.filter((k) => w[k] !== undefined);
+    if (bound.length && w.previews === undefined) fail("wrangler.jsonc", `has ${bound.join(", ")} but no "previews" block: give Previews safe values (see the template's wrangler.jsonc)`);
     if (w.main) {
       if (!existsSync(w.main)) fail("wrangler.jsonc", `main ${w.main} doesn't exist`);
       else if (w.main.replace(/^\.\//, "").startsWith("site/")) fail("wrangler.jsonc", "main must be outside site/: site/ holds only static files");
@@ -162,6 +177,7 @@ if (cfg.worker) {
 // Secrets never go in the repo.
 for (const f of htmlFiles(dir)) if (/(api[_-]?key|secret|token)\s*[:=]\s*["'][A-Za-z0-9_\-]{16,}["']/i.test(read(f))) fail(f, "looks like it contains a key or token");
 
+if (setupCards.length) console.warn(`check: ${setupCards.length} page(s) still use the setup card (${setupCards.slice(0, 3).join(", ")}${setupCards.length > 3 ? "…" : ""}); npm run check:launch fails until each has its own link-card image`);
 if (problems.length) {
   console.error(`${problems.length} problem(s):\n` + problems.map((p) => "  - " + p).join("\n"));
   process.exit(1);

@@ -10,12 +10,19 @@
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page"
   },
-  // Server routes, only if the project needs them (see AGENTS.md › Server routes): uncomment, and put the code in worker/.
+  // Server routes, only if the project needs them (see AGENTS.md › Server routes): uncomment, and put the code in worker/
+  // (its tests go in test/, run by "test:project"). Then add to "assets":
+  //   "binding": "ASSETS"                          the code serves the site with env.ASSETS.fetch(request)
+  //   "run_worker_first": ["/api/*", "/ingest"]    only these paths run the code; static pages are served without it
+  // The router strips /interactives/<slug>, so routes are the Worker's own paths: /api/…, not /interactives/<slug>/api/….
   // "main": "worker/index.js",
-  // "assets": { …, "binding": "ASSETS" } then lets the code serve the site with env.ASSETS.fetch(request).
   // The workers.dev address serves Previews (the <slug>-test step) and any write route; readers use nysfocus.com.
   "workers_dev": true,
   "preview_urls": true,
   // Query strings can hold what readers type, so logs keep only the path.
-  "observability": { "enabled": true, "redact_query_string": true }
+  "observability": { "enabled": true, "redact_query_string": true },
+  // Previews (each branch's preview build) inherit none of the settings below from production: no vars, bindings or
+  // secrets. A project that adds "vars" or a binding ("kv_namespaces", "services"…) gives Previews safe values here,
+  // e.g. { "vars": { "ELECTION_ID": "45" } }, and its code copes with what's missing (a 404 or 503, not an exception).
+  "previews": {}
 }

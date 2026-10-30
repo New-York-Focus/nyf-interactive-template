@@ -15,7 +15,9 @@ The quickest way: open an AI agent session (Claude Code, Codex) on this repo and
    `example-interactive` and replace it with your slug.
 3. Build the site into `site/`: one folder per page, each with an `index.html` (`site/county/erie/index.html` is served at
    `…/<slug>/county/erie/`). Keep data, images, styles and scripts in `site/` too.
-4. `npm test` builds `site/sitemap.xml` and runs the checklist. It must pass; GitHub runs it on every pull request.
+4. `npm test` builds `site/sitemap.xml` and runs the checklist. It must pass; GitHub runs it on every pull request. Until
+   the project has its own link cards, `npm run card:setup` writes a plain setup card so the setup can be committed;
+   `npm test` warns about it, and `npm run check:launch` fails on it.
 5. Ask Kyle to create the Cloudflare Worker (below) and to add the test entry to `nyf-interactives`.
 
 ## The checklist (what `npm test` enforces)
@@ -81,8 +83,26 @@ Workers & Pages › Create › Worker › **Import a repository** (Workers Build
 | Deploy command | `npx wrangler deploy` |
 | Preview builds | on (Settings › Build › Branch control): every branch gets a Preview at `<branch>-<worker>.new-york-focus.workers.dev` (noindex) |
 
-The rest of the Worker's settings live in `wrangler.jsonc`, which every deploy applies. Secrets (a write route's token)
-are set by Kyle under Settings › Variables and Secrets, never in the repo.
+The rest of the Worker's settings live in `wrangler.jsonc`, which every deploy applies.
+- **Two kinds of key.** Workers Builds makes its own API token to deploy the Worker: that's Cloudflare's, and nobody
+  handles it. A project's own secrets (a write route's token) are set by Kyle under Settings › Variables and Secrets,
+  with **Production** selected (not Previews Base), never in the repo.
+- **Storage.** A KV binding without an `id` (`"kv_namespaces": [{ "binding": "RESULTS" }]`) is created on the first deploy.
+- **Previews** get none of production's vars, bindings or secrets: `wrangler.jsonc` › `previews` gives them safe values,
+  and `npm test` fails if a project has vars or bindings without that block.
+
+## Server routes and tests (only if a project needs them)
+- **Code:** `worker/`, with `main` in `wrangler.jsonc`, and only what's deployed. List its routes in
+  `assets.run_worker_first` so static pages don't run it. `AGENTS.md` › Rules has the rules for reader and write routes.
+- **Paths:** the `nyf-interactives` router removes `/interactives/<slug>` before a request reaches the Worker, so
+  `nysfocus.com/interactives/<slug>/api/x` arrives as `/api/x`. Write routes aren't reached through nysfocus.com at
+  all: they're called at the Worker's `workers.dev` address.
+- **Tests:** in `test/` (fixtures in `test/fixtures/`), run by a `test:project` script in `package.json`. GitHub runs it on
+  every PR after `npm test`, installing from `package-lock.json` first. Keep test code out of `worker/`: `npm test` checks
+  everything there as deployable code (a fake token in a test would fail it).
+- **Local build tools** (map tools, Playwright for link cards) go in `source/package.json`, so the root, which Workers
+  Builds installs, keeps only what the Worker and its tests need. A globally installed Playwright loads in an ES module
+  with `createRequire(import.meta.url)("playwright")`; `import` doesn't find it.
 
 Merging to `main` publishes to production. Readers only see it once `nyf-interactives` serves the slug.
 
@@ -92,4 +112,5 @@ Each step is a PR in `nyf-interactives` (its `CLAUDE.md` has the details):
 2. Merge to `main` here, so production is deployed (readers can't reach it yet).
 3. Add the service binding for the Worker and change the entry to `{ worker, binding, test: true }`: check
    `<slug>-test` again, now through the path readers will use.
-4. Rename the entry to `<slug>` and remove `test`. That merge is the launch.
+4. Once `npm run check:launch` passes here (every page has its own link card), rename the entry to `<slug>` and remove
+   `test`. That merge is the launch.

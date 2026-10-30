@@ -6,9 +6,11 @@
     "build": "node scripts/head.mjs site && node scripts/footer.mjs inject site && node scripts/build-sitemap.mjs site",
     "check": "node scripts/check.mjs site",
     "test": "npm run build && npm run check",
+    "check:launch": "npm run build && node scripts/check.mjs site --launch",
     "footer:sync": "node scripts/footer.mjs sync",
     "footer:check": "node scripts/footer.mjs check",
     "template:sync": "node scripts/template.mjs sync",
-    "template:check": "node scripts/template.mjs check"
+    "template:check": "node scripts/template.mjs check",
+    "card:setup": "node scripts/card.mjs site/share.png"
   }
 }

@@ -12,6 +12,7 @@
     "scripts/footer.mjs",
     "scripts/head.mjs",
     "scripts/seo.mjs",
+    "scripts/card.mjs",
     "scripts/arial-widths.mjs",
     "brand/footer.html",
     "brand/footer.css",

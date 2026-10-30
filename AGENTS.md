@@ -17,12 +17,19 @@ directly; Claude Code reads it through `CLAUDE.md`).
 - No secrets in the repo, ever. If server code needs a key or token, Kyle enters it as a Worker secret. Never handle the
   key, print it or log it.
 - Server routes: the site stays plain static files in `site/`; server code, only if the project needs it, goes in
-  `worker/` (`main` in `wrangler.jsonc`). Routes readers' browsers call are GET only. A route that writes (an ingest, an
-  admin action) checks a secret token (a Worker secret Kyle sets) in the `Authorization` header, is never called from a
-  reader's browser, is never cached, and is reached at the Worker's own `workers.dev` address (nysfocus.com is GET
-  only). A timeout on every outside call, failures not cached, and never log what readers type or what's posted
-  (queries, addresses, URLs, bodies): log the provider or route and the status only. (The Pages project's Functions, in
-  `functions/`, follow the same rules.)
+  `worker/` (`main` in `wrangler.jsonc`), with only what's deployed there: its tests and fixtures go in `test/`, run by
+  the `test:project` script (CI runs it on every PR). List the routes in `assets.run_worker_first` so static pages are
+  served without running the code. The router strips `/interactives/<slug>`, so routes are the Worker's own paths.
+  - Routes readers' browsers call are GET only.
+  - A route that writes (an ingest, an admin action) checks a secret token (a Worker secret Kyle sets) in the
+    `Authorization` header, is never cached, and is reached at the Worker's own `workers.dev` address (nysfocus.com is
+    GET only). It's never called from a reader's browser; if an operator's browser posts to it (a script on a results
+    site), allow CORS for that one origin only, including the preflight and every response, errors too.
+  - Previews have none of production's vars, bindings or secrets: give them safe values in `wrangler.jsonc` › `previews`,
+    and make the code cope with what's missing (a 404 or 503, not an exception).
+  - A timeout on every outside call, failures not cached, and never log what readers type or what's posted (queries,
+    addresses, URLs, bodies): log the provider or route and the status only.
+  - (The Pages project's Functions, in `functions/`, follow the same rules.)
 - Brand: style with the variables in `site/brand.css`, and keep the font kit `<link>` on every page. The nysfocus.com header
   and footer come from `brand/` (`npm run build` inserts them); never edit them in the pages. Update them with
   `npm run footer:sync`.
@@ -30,6 +37,8 @@ directly; Claude Code reads it through `CLAUDE.md`).
   there, never in the pages.
 - Never launch a page without an SEO `<title>` within 580px, a meta description within 920px, and a 1200×630 link-card
   image (`og:image`, with alt text) of its own; `npm test` enforces these, and the placeholder `share.png` doesn't count.
+  A new project's setup commit can use the setup card (`npm run card:setup`): `npm test` only warns about it, and
+  `npm run check:launch`, which must pass before the project's router entry goes live, fails on it.
 - Every page keeps the analytics block from the template (Plausible and Google Tag Manager, the same as nysfocus.com). Don't add other trackers, ad scripts or third-party embeds without asking.
 - Don't change `nyf-interactives` from here. Launches and routing are PRs there, reviewed by Kyle.
 
@@ -81,6 +90,10 @@ change is logged in the repo:
   adds Cron Triggers), reached by the router through a service binding. Reader routes GET only; write routes
   token-protected. `2026-county-elections` stays on Pages. Kyle
 - 2026-10-30 · Slugs for election results: `YYYY-election-results` for generals, `YYYY-primary-results` for primaries. Kyle
+- 2026-10-30 · A new project commits its setup with a plain setup card (`npm run card:setup`), so it needn't wait for its
+  link cards; `npm run check:launch` fails on it, so it never launches. Kyle
+- 2026-10-30 · Link cards for district pages: small districts zoomed in with a state locator, large ones on the state map,
+  New York City districts circled. Kyle
 
 <!-- nyf-template-sync: everything above this line comes from nyf-interactive-template (npm run template:sync replaces it); everything below is this project's own. -->
 ## This project

@@ -20,3 +20,7 @@ jobs:
         with:
           node-version: 22
       - run: npm test
+      # A project's own tests (its parser, its server routes), if it has them: "test:project" in package.json. Their
+      # dependencies install from package-lock.json, if there is one.
+      - run: if [ -f package-lock.json ]; then npm ci; fi
+      - run: npm run test:project --if-present

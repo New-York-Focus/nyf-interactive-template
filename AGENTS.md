@@ -30,7 +30,7 @@ directly; Claude Code reads it through `CLAUDE.md`).
   - A timeout on every outside call, failures not cached, and never log what readers type or what's posted (queries,
     addresses, URLs, bodies): log the provider or route and the status only.
   - (The Pages project's Functions, in `functions/`, follow the same rules.)
-- Brand: style with the variables in `site/brand.css`, and keep the font kit `<link>` on every page. The nysfocus.com header
+- Brand: style with the variables and shared classes in `site/brand.css` (README › Brand), and keep the font kit `<link>` on every page. The nysfocus.com header
   and footer come from `brand/` (`npm run build` inserts them); never edit them in the pages. Update them with
   `npm run footer:sync`.
 - The shared `<head>` tags (Wisepops, icons, social) come from `brand/head.html`, inserted by `npm run build`; edit them
@@ -97,6 +97,8 @@ change is logged in the repo:
 - 2026-10-30 · Spacing follows nysfocus.com: margins, padding and gaps come from its 8px scale (`--nyf-space-*` in
   `brand.css`), tight inside a group and generous between groups; text sits `--nyf-gutter` from the screen's edge (24px
   on a phone, 40px on a wide screen) and sections `--nyf-section` apart (32px, 48px from 768px), as on the site. Kyle
+- 2026-10-30 · Section headers are the site's full-width yellow bar (`.nyf-section-bar` in `brand.css`). Kyle
+- 2026-10-30 · Data pages use the site's 1366px frame (`.nyf-wide`); article-like pages keep a narrow reading column. Kyle
 
 <!-- nyf-template-sync: everything above this line comes from nyf-interactive-template (npm run template:sync replaces it); everything below is this project's own. -->
 ## This project

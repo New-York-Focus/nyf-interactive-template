@@ -61,6 +61,10 @@ Not checked automatically, but expected: `twitter:image:alt` (the same as `og:im
   as the site does: tight inside a group, generous between groups. Link the font kit and `brand.css` from every page, as `site/index.html`
   does, and style with the variables. The fonts (Knockout and Chronicle, from Hoefler&Co) are licensed for nysfocus.com:
   they load on `nysfocus.com/interactives/…` but not on `workers.dev` previews, which show the fallbacks.
+- **Shared pieces:** `brand.css` also has the site's section header, a full-width yellow bar (`<h2 class="nyf-section-bar">`,
+  inside a container padded by `--nyf-gutter`); the dek under the headline (`<p class="nyf-dek">` right after the `<h1>`);
+  a label above a list (`<p class="nyf-label">`, uppercase under a short yellow rule); and the site's 1366px frame for
+  data pages (`<main class="nyf-wide">`; article-like pages keep a narrow reading column). `site/index.html` uses them.
 - **Footer:** the website's footer, as-is, at the end of every page. `brand/footer.html` is the website's `<footer>` with
   links made absolute; `brand/footer.css` is the website's own CSS rules for it, scoped to `.nyf-footer` after a reset, so
   the footer and the interactive can't restyle each other. `npm run build` (part of `npm test`) inserts both before
@@ -73,6 +77,28 @@ Not checked automatically, but expected: `twitter:image:alt` (the same as `og:im
 - **Keeping them in sync:** when the website's header or footer changes, run `npm run footer:sync`, then `npm test`, look
   at a page and open a PR with `brand/` and `site/`. The "Footer sync check" GitHub Action compares them every morning and
   opens an issue when they differ (run it by hand from the Actions tab too).
+
+## Maps (SVG)
+Lessons from the 2026 election results maps:
+- **Borders drawn once.** Each shape drawing its own border makes shared borders look doubled or thin, and a neighbor
+  drawn later covers half of a hover outline. All three fixes are needed:
+  1. When thinning shapes, snap points to a fixed grid (not "drop a point close to the last one"), so neighbors keep the
+     same points along the border they share.
+  2. `vector-effect: non-scaling-stroke` on map paths, so a 1px border is 1px however the map is scaled.
+  3. Shapes get `stroke: none`; a script clones each path's `d` into a `<g class="edges">` above them, with
+     `pointer-events: none`, and moves the hovered shape's border to the end of that layer. (On a simpler map, moving
+     the hovered shape itself to the end of the SVG fixes the hover outline.)
+- **Gotchas:** give the cloned border paths a class, or a rule like `path:not([class]) { fill: … }` fills them and covers
+  the map. An SVG element has no `.hidden` property: use `toggleAttribute("hidden", …)`. SVG text scales with the
+  drawing: size map labels from the viewBox (e.g. `W / 46`), not in CSS pixels.
+- **New York City:** a "New York State / New York City" switch showing one view at a time, both the same height
+  (`aspect-ratio` on both SVGs), reads better than an inset or stacking them.
+- **Hover cards:** the place's own results in a small table (party dot, last name, votes, share), one `tip()` for every map.
+
+Other patterns that worked: a winner's checkmark in a narrow last column, empty on other rows so nothing shifts before a
+call, with a CSS tooltip (`::after { content: attr(data-tip) }`) and an `aria-label`; a sticky map beside a list
+(`position: sticky` inside a grid), stacked on a phone. To measure nysfocus.com's styles, render saved copies of its
+pages with Playwright, outside requests blocked, and read the computed styles.
 
 ## Cloudflare Worker settings (Kyle creates the Worker)
 Workers & Pages › Create › Worker › **Import a repository** (Workers Builds), choosing `New-York-Focus/nyf-<slug>`:

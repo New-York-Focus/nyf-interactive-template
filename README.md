@@ -81,8 +81,26 @@ Workers & Pages › Create › Worker › **Import a repository** (Workers Build
 | Deploy command | `npx wrangler deploy` |
 | Preview builds | on (Settings › Build › Branch control): every branch gets a Preview at `<branch>-<worker>.new-york-focus.workers.dev` (noindex) |
 
-The rest of the Worker's settings live in `wrangler.jsonc`, which every deploy applies. Secrets (a write route's token)
-are set by Kyle under Settings › Variables and Secrets, never in the repo.
+The rest of the Worker's settings live in `wrangler.jsonc`, which every deploy applies.
+- **Two kinds of key.** Workers Builds makes its own API token to deploy the Worker: that's Cloudflare's, and nobody
+  handles it. A project's own secrets (a write route's token) are set by Kyle under Settings › Variables and Secrets,
+  with **Production** selected (not Previews Base), never in the repo.
+- **Storage.** A KV binding without an `id` (`"kv_namespaces": [{ "binding": "RESULTS" }]`) is created on the first deploy.
+- **Previews** get none of production's vars, bindings or secrets: `wrangler.jsonc` › `previews` gives them safe values,
+  and `npm test` fails if a project has vars or bindings without that block.
+
+## Server routes and tests (only if a project needs them)
+- **Code:** `worker/`, with `main` in `wrangler.jsonc`, and only what's deployed. List its routes in
+  `assets.run_worker_first` so static pages don't run it. `AGENTS.md` › Rules has the rules for reader and write routes.
+- **Paths:** the `nyf-interactives` router removes `/interactives/<slug>` before a request reaches the Worker, so
+  `nysfocus.com/interactives/<slug>/api/x` arrives as `/api/x`. Write routes aren't reached through nysfocus.com at
+  all: they're called at the Worker's `workers.dev` address.
+- **Tests:** in `test/` (fixtures in `test/fixtures/`), run by a `test:project` script in `package.json`. GitHub runs it on
+  every PR after `npm test`, installing from `package-lock.json` first. Keep test code out of `worker/`: `npm test` checks
+  everything there as deployable code (a fake token in a test would fail it).
+- **Local build tools** (map tools, Playwright for link cards) go in `source/package.json`, so the root, which Workers
+  Builds installs, keeps only what the Worker and its tests need. A globally installed Playwright loads in an ES module
+  with `createRequire(import.meta.url)("playwright")`; `import` doesn't find it.
 
 Merging to `main` publishes to production. Readers only see it once `nyf-interactives` serves the slug.
 

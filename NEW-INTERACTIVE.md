@@ -25,7 +25,8 @@ If I already gave any of these in my message, don't ask again.
 1. **Set up the repo.** It should be `New-York-Focus/nyf-<slug>`, created from the template.
    - If it doesn't exist yet and you can use `gh`, create it with
      `gh repo create New-York-Focus/nyf-<slug> --template New-York-Focus/nyf-interactive-template --private --clone`.
-   - If you can't create it, give me these steps, and wait for me:
+   - If you can't create it (the GitHub tools agents usually have can't create a repo from a template, so this is the
+     usual path), give me these steps, and wait for me:
      1. Open https://github.com/New-York-Focus/nyf-interactive-template and click **Use this template › Create a new
         repository**.
      2. Under **Owner**, switch from your own account to **New-York-Focus**. GitHub picks your personal account by
@@ -38,8 +39,8 @@ If I already gave any of these in my message, don't ask again.
 2. **Read `AGENTS.md` and `README.md` in full.** They are this project's instructions, whatever tool you are
    (`CLAUDE.md` just imports `AGENTS.md`). They hold the rules, the brand and SEO standards, the Decisions everyone
    keeps, and how we work together.
-3. **Look at a finished example:** `New-York-Focus/nyf-2026-county-elections`, live at
-   https://nysfocus.com/interactives/2026-county-elections/. It shows how a project fills in `AGENTS.md`, builds its pages
+3. **Look at a finished example:** `New-York-Focus/nyf-2026-county-elections` (add it to your session to read it), live
+   at https://nysfocus.com/interactives/2026-county-elections/. It shows how a project fills in `AGENTS.md`, builds its pages
    from data, and draws a link-card image per page.
 4. **Propose a short plan,** and wait for my OK. Cover:
    - the pages and their addresses;
@@ -65,7 +66,9 @@ If I already gave any of these in my message, don't ask again.
 - **Search and sharing:** every page needs its own title (within 580px), description (within 920px) and 1200×630
   link-card image with alt text. Link cards carry no text.
 - **Server routes:** keep it static unless it truly needs them. If it does, follow the rules in `AGENTS.md`:
-  - the code goes in `worker/` (`main` in `wrangler.jsonc`); `site/` stays plain static files;
+  - the code goes in `worker/` (`main` in `wrangler.jsonc`), its tests in `test/` (a `test:project` script);
+    `site/` stays plain static files; see `README.md` › Server routes and tests;
+  - Previews get none of production's vars or bindings: give them safe values in `wrangler.jsonc` › `previews`;
   - routes readers' browsers call are GET only, with a timeout on every outside call;
   - a route that writes checks a secret token and is never called from a reader's browser;
   - never log what readers type or what's posted;

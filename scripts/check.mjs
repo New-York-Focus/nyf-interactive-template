@@ -32,7 +32,8 @@ const read = (f) => readFileSync(`${dir}/${f}`, "utf8");
 
 // Scripts and styles may contain "/" in code; links in markup are what resolve against the folder.
 const markup = (html) => html.replace(/<script\b[\s\S]*?<\/script>/gi, "").replace(/<style\b[\s\S]*?<\/style>/gi, "");
-const attr = (tag, name) => (tag.match(new RegExp(`\\b${name}\\s*=\\s*["']([^"']*)["']`, "i")) || [])[1];
+// The closing quote matches the opening one: content="New York's races" keeps its apostrophe.
+const attr = (tag, name) => (tag.match(new RegExp(`\\b${name}\\s*=\\s*(["'])([\\s\\S]*?)\\1`, "i")) || [])[2];
 
 for (const f of htmlFiles(dir)) {
   const html = read(f), body = markup(html);
@@ -141,6 +142,11 @@ if (cfg.worker) {
     if (w.assets?.not_found_handling !== "404-page") fail("wrangler.jsonc", `assets.not_found_handling must be "404-page" (404.html for unknown paths)`);
     if ((w.assets?.html_handling || "auto-trailing-slash") !== "auto-trailing-slash") fail("wrangler.jsonc", `assets.html_handling must be "auto-trailing-slash": every page is a folder`);
     if (w.workers_dev === false || w.preview_urls === false) fail("wrangler.jsonc", "keep workers_dev and preview_urls on: the <slug>-test address serves a Preview");
+    // Previews inherit no vars or bindings from production, and Workers Builds' preview command fails without this block.
+    const BINDINGS = ["vars", "kv_namespaces", "d1_databases", "r2_buckets", "services", "durable_objects", "queues",
+      "hyperdrive", "vectorize", "ai", "analytics_engine_datasets", "workflows", "browser", "images"];
+    const bound = BINDINGS.filter((k) => w[k] !== undefined);
+    if (bound.length && w.previews === undefined) fail("wrangler.jsonc", `has ${bound.join(", ")} but no "previews" block: give Previews safe values (see the template's wrangler.jsonc)`);
     if (w.main) {
       if (!existsSync(w.main)) fail("wrangler.jsonc", `main ${w.main} doesn't exist`);
       else if (w.main.replace(/^\.\//, "").startsWith("site/")) fail("wrangler.jsonc", "main must be outside site/: site/ holds only static files");

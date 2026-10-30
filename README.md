@@ -7,7 +7,8 @@ Start every reader-facing interactive from this repo. Each one is published at
 ## Start a project
 The quickest way: open an AI agent session (Claude Code, Codex) on this repo and say "start a new interactive"; it follows
 `NEW-INTERACTIVE.md`. By hand:
-1. Create a repo from this template, named `nyf-<slug>` (e.g. `nyf-2026-county-elections`).
+1. Create a repo from this template, named `nyf-<slug>` (e.g. `nyf-2026-county-elections`), with **New-York-Focus** as its
+   owner: GitHub picks your personal account by default, so switch the Owner menu before creating it.
 2. Edit `interactive.json`: `slug` (the address after `/interactives/`), `pagesProject` (the Pages project name, normally the
    repo name) and `title`. Then search the repo for `example-interactive` and replace it with your slug.
 3. Build the site into `site/`: one folder per page, each with an `index.html` (`site/county/erie/index.html` is served at

@@ -75,3 +75,6 @@ change is logged in the repo:
 ## This project
 This is the template itself. A project describes itself here: who works on it, how it's built, and its own decisions
 (dated, with who made them).
+
+To start a new interactive, follow `NEW-INTERACTIVE.md`: it sets up a new repo from this one and builds there. Never build
+a project in this repo.

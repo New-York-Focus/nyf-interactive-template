@@ -22,4 +22,23 @@
   --nyf-font-sans: "Knockout 32 A", "Knockout 32 B", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
   --nyf-font-display: "Chronicle Display A", "Chronicle Display B", Georgia, "Times New Roman", serif;
   --nyf-font-serif: "Chronicle Text G1 A", "Chronicle Text G1 B", Georgia, "Times New Roman", serif;
+
+  /* Spacing: nysfocus.com's 8px scale (its Tailwind steps, measured 2026-10-30). Use these for margins, padding and gaps
+     rather than one-off values: tight inside a group (a headline, its summary and byline sit --nyf-space-2 apart),
+     generous between groups (sections sit --nyf-section apart). */
+  --nyf-space-half: 4px;
+  --nyf-space-1: 8px;
+  --nyf-space-2: 16px;
+  --nyf-space-3: 24px;
+  --nyf-space-4: 32px;
+  --nyf-space-5: 40px;
+  --nyf-space-6: 48px;
+  --nyf-space-8: 64px;
+  /* They grow with the screen, as on the site: the space between the screen's edge and the text (24px on a phone, 32px
+     from 1024px wide, 40px from 1280px) and between sections (32px, then 48px from 768px) */
+  --nyf-gutter: 24px;
+  --nyf-section: 32px;
 }
+@media (min-width: 768px) { :root { --nyf-section: 48px; } }
+@media (min-width: 1024px) { :root { --nyf-gutter: 32px; } }
+@media (min-width: 1280px) { :root { --nyf-gutter: 40px; } }

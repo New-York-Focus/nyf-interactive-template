@@ -1,5 +1,5 @@
 /* The example's own styles, on the brand variables in brand.css. */
 body{font-family:var(--nyf-font-serif);color:var(--nyf-ink);margin:0}
-main{max-width:48rem;margin:0 auto;padding:1rem}
+main{max-width:48rem;margin:0 auto;padding:var(--nyf-space-2) var(--nyf-gutter) var(--nyf-section)}
 h1,h2{font-family:var(--nyf-font-display);font-weight:400;line-height:1.1}
 a{color:var(--nyf-blue)}

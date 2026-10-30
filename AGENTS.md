@@ -94,6 +94,9 @@ change is logged in the repo:
   link cards; `npm run check:launch` fails on it, so it never launches. Kyle
 - 2026-10-30 · Link cards for district pages: small districts zoomed in with a state locator, large ones on the state map,
   New York City districts circled. Kyle
+- 2026-10-30 · Spacing follows nysfocus.com: margins, padding and gaps come from its 8px scale (`--nyf-space-*` in
+  `brand.css`), tight inside a group and generous between groups; text sits `--nyf-gutter` from the screen's edge (24px
+  on a phone, 40px on a wide screen) and sections `--nyf-section` apart (32px, 48px from 768px), as on the site. Kyle
 
 <!-- nyf-template-sync: everything above this line comes from nyf-interactive-template (npm run template:sync replaces it); everything below is this project's own. -->
 ## This project

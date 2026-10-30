@@ -1,0 +1,21 @@
+// The Worker's settings: every deploy (Workers Builds, on each merge to main) applies them. Rename "name" to this
+// project's Worker, the same as "worker" in interactive.json (normally the repo name).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nyf-example-interactive",
+  "compatibility_date": "2026-10-30",
+  // The site: plain static files, built into site/. Every page is a folder with an index.html; 404.html for the rest.
+  "assets": {
+    "directory": "site",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  // Server routes, only if the project needs them (see AGENTS.md › Server routes): uncomment, and put the code in worker/.
+  // "main": "worker/index.js",
+  // "assets": { …, "binding": "ASSETS" } then lets the code serve the site with env.ASSETS.fetch(request).
+  // The workers.dev address serves Previews (the <slug>-test step) and any write route; readers use nysfocus.com.
+  "workers_dev": true,
+  "preview_urls": true,
+  // Query strings can hold what readers type, so logs keep only the path.
+  "observability": { "enabled": true, "redact_query_string": true }
+}

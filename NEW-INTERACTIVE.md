@@ -45,13 +45,14 @@ If I already gave any of these in my message, don't ask again.
    - the pages and their addresses;
    - what each page shows;
    - how the pages are generated from the data;
-   - any Function it needs (anything that calls an outside service from the server, such as an address lookup);
+   - any server routes it needs (an address lookup that calls an outside service, an ingest that receives data, a
+     scheduled job), or none;
    - its search titles and descriptions;
    - its link-card images.
 
 ## While you build
 - **Set up the project:**
-  - Fill in `interactive.json` (slug, `pagesProject` = the repo name, title).
+  - Fill in `interactive.json` (slug, `worker` = the repo name, title) and the same name in `wrangler.jsonc`.
   - Replace `example-interactive` everywhere.
   - Fill in "This project" in `AGENTS.md`: what it is, who works on it, how it's built, and how to rebuild it.
 - **Pages:**
@@ -63,29 +64,34 @@ If I already gave any of these in my message, don't ask again.
   - Keep it readable at phone width.
 - **Search and sharing:** every page needs its own title (within 580px), description (within 920px) and 1200×630
   link-card image with alt text. Link cards carry no text.
-- **Functions:** keep it static unless it truly needs one. If it does, follow the Functions rules in `AGENTS.md`:
-  - GET only, with a timeout on every outside call;
-  - never log what readers type;
+- **Server routes:** keep it static unless it truly needs them. If it does, follow the rules in `AGENTS.md`:
+  - the code goes in `worker/` (`main` in `wrangler.jsonc`); `site/` stays plain static files;
+  - routes readers' browsers call are GET only, with a timeout on every outside call;
+  - a route that writes checks a secret token and is never called from a reader's browser;
+  - never log what readers type or what's posted;
   - no keys in the repo (tell me, and Kyle adds them in Cloudflare).
 - **Shared files:** don't change the ones listed in `template.json` here. If one needs changing, say so; it's changed in
   `nyf-interactive-template`.
 - **Testing:**
   - Run `npm test` before every commit; it must pass, and never weaken `scripts/check.mjs`.
   - Test what you claim before you claim it.
-  - The brand fonts only load on nysfocus.com addresses: `pages.dev` previews show fallback fonts, so check layout with
-    that in mind.
+  - The brand fonts only load on nysfocus.com addresses: `workers.dev` previews show fallback fonts, so check layout
+    with that in mind.
 - **Committing:**
   - Work on a branch and open a PR that says what changed, why, and how it was tested.
   - Add a dated line to "Decisions (this project)" for any lasting call, with who made it.
-  - Anyone may merge a PR once its checks pass and it's up to date with `main`; a merge publishes to the Pages project.
+  - A New York Focus staff member merges a PR once its checks pass and it's up to date with `main`; you merge only when
+    one of us explicitly tells you to. A merge publishes to the project's Worker.
 
 ## Getting it online
 Kyle has the Cloudflare access, so ask me to send Kyle these:
-1. **The Cloudflare Pages project:** connected to Git, production branch `main`, build command `npm test`, output
-   directory `site`.
-2. **A test address:** an entry in `nyf-interactives` so we can check the project at
+1. **The Cloudflare Worker:** Workers & Pages › Create › Worker › Import a repository, this repo; production branch
+   `main`, build command `npm test`, deploy command `npx wrangler deploy`, preview builds on (`README.md` › Cloudflare
+   Worker settings). Plus any secret a write route needs.
+2. **A test address:** an entry in `nyf-interactives` so we can check the project's Preview at
    `nysfocus.com/interactives/<slug>-test/` with the real fonts.
-3. **The launch:** a second `nyf-interactives` entry, at `/<slug>/`.
+3. **The launch:** after production is deployed, the router's service binding to the Worker, tried at `<slug>-test`, then
+   the entry at `/<slug>/` (`README.md` › Launch).
 
 After the launch, check the live pages and the sitemap at `nysfocus.com/interactives/<slug>/sitemap.xml`.
 

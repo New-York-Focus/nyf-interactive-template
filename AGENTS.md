@@ -39,6 +39,9 @@ directly; Claude Code reads it through `CLAUDE.md`).
   image (`og:image`, with alt text) of its own; `npm test` enforces these, and the placeholder `share.png` doesn't count.
   A new project's setup commit can use the setup card (`npm run card:setup`): `npm test` only warns about it, and
   `npm run check:launch`, which must pass before the project's router entry goes live, fails on it.
+- Speed: anything a script draws after load starts in the page at its final size (render it in the build, or reserve the
+  space), so nothing shifts; every `<img>` has `width` and `height`; a page stays under 500 KB of HTML; hidden panels draw
+  their content when first opened (README › Speed).
 - Every page keeps the analytics block from the template (Plausible and Google Tag Manager, the same as nysfocus.com). Don't add other trackers, ad scripts or third-party embeds without asking.
 - Don't change `nyf-interactives` from here. Launches and routing are PRs there, reviewed by Kyle.
 
@@ -99,6 +102,7 @@ change is logged in the repo:
   on a phone, 40px on a wide screen) and sections `--nyf-section` apart (32px, 48px from 768px), as on the site. Kyle
 - 2026-10-30 · Section headers are the site's full-width yellow bar (`.nyf-section-bar` in `brand.css`). Kyle
 - 2026-10-30 · Data pages use the site's 1366px frame (`.nyf-wide`); article-like pages keep a narrow reading column. Kyle
+- 2026-10-31 · Deks under headlines are 20px at every width (`.nyf-dek`). Kyle
 
 <!-- nyf-template-sync: everything above this line comes from nyf-interactive-template (npm run template:sync replaces it); everything below is this project's own. -->
 ## This project

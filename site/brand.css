@@ -57,13 +57,23 @@
   font: 400 24px/1 var(--nyf-font-headline);
   text-transform: uppercase;
 }
-/* The dek, right under the headline: <h1>…</h1><p class="nyf-dek">…</p> */
+/* The dek, right under the headline: <h1>…</h1><p class="nyf-dek">…</p>; 20px at every width */
 h1:has(+ .nyf-dek) { margin-bottom: 0; }
 .nyf-dek {
   margin: var(--nyf-space-2) 0 var(--nyf-space-4);
   max-width: 43rem;
   font: 400 20px/1.4 var(--nyf-font-serif);
 }
+/* A sentence under a section bar on what the section shows: <h2 class="nyf-section-bar">…</h2><p class="nyf-section-dek"> */
+.nyf-section-bar:has(+ .nyf-section-dek) { margin-bottom: var(--nyf-space-1); }
+.nyf-section-dek {
+  margin: var(--nyf-space-1) 0 var(--nyf-space-4);
+  max-width: 43rem;
+  font: 400 18px/1.4 var(--nyf-font-sans);
+  color: var(--nyf-grey-dark);
+}
+/* Secondary text: "47% of election districts reporting", a party under a candidate's name */
+.nyf-meta { font-size: 14px; color: var(--nyf-grey); }
 /* A label above a list ("Races to Watch"): reads as a label, not another headline */
 .nyf-label {
   margin: 0 0 var(--nyf-space-2);
@@ -81,6 +91,7 @@ h1:has(+ .nyf-dek) { margin-bottom: 0; }
   background: var(--nyf-yellow);
 }
 @media (min-width: 768px) {
-  .nyf-section-bar { font-size: 30px; margin-bottom: var(--nyf-space-6); }
-  .nyf-dek { font-size: 23px; margin-bottom: var(--nyf-space-6); }
+  .nyf-section-bar { font-size: 30px; line-height: 36px; margin-bottom: var(--nyf-space-6); }   /* 60px tall, as on the site */
+  .nyf-dek { margin-bottom: var(--nyf-space-6); }
+  .nyf-section-dek { margin-bottom: var(--nyf-space-6); }
 }

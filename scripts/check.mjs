@@ -39,6 +39,7 @@ const markup = (html) => html.replace(/<script\b[\s\S]*?<\/script>/gi, "").repla
 // The closing quote matches the opening one: content="New York's races" keeps its apostrophe.
 const attr = (tag, name) => (tag.match(new RegExp(`\\b${name}\\s*=\\s*(["'])([\\s\\S]*?)\\1`, "i")) || [])[2];
 
+const MAX_KB = 500, heavy = [];
 for (const f of htmlFiles(dir)) {
   const html = read(f), body = markup(html);
   // 1. Relative links only.
@@ -46,6 +47,13 @@ for (const f of htmlFiles(dir)) {
   for (const m of body.matchAll(/\b(href|src|action|poster|data)\s*=\s*["'](\/[^/"'][^"']*|\/)["']/gi)) fail(f, `${m[1]}="${m[2]}" starts with /`);
   for (const m of html.matchAll(/\bfetch\(\s*["'`](\/[^/][^"'`]*)/g)) fail(f, `fetch("${m[1]}") starts with /`);
   for (const m of html.matchAll(/url\(\s*["']?(\/[^/)"'][^)"']*)/g)) fail(f, `url(${m[1]}) starts with /`);
+  // Images keep their space while they load (width and height), so nothing shifts. The header and footer are the site's.
+  const own = body.replace(/<!-- nyf-(header|footer)\b[\s\S]*?<!-- \/nyf-\1 -->/g, "");
+  for (const m of own.matchAll(/<img\b[^>]*>/gi)) if (!attr(m[0], "width") || !attr(m[0], "height"))
+    fail(f, `<img src="${attr(m[0], "src") || ""}"> needs width and height`);
+  // Page weight: a big page is slow to read on a phone, whatever the connection.
+  const kb = Math.round(Buffer.byteLength(html) / 1024);
+  if (kb > MAX_KB) heavy.push(`${f} (${kb} KB)`);
 }
 
 const titles = new Map(), descriptions = new Map();
@@ -178,6 +186,7 @@ if (cfg.worker) {
 for (const f of htmlFiles(dir)) if (/(api[_-]?key|secret|token)\s*[:=]\s*["'][A-Za-z0-9_\-]{16,}["']/i.test(read(f))) fail(f, "looks like it contains a key or token");
 
 if (setupCards.length) console.warn(`check: ${setupCards.length} page(s) still use the setup card (${setupCards.slice(0, 3).join(", ")}${setupCards.length > 3 ? "…" : ""}); npm run check:launch fails until each has its own link-card image`);
+if (heavy.length) console.warn(`check: ${heavy.length} page(s) over ${MAX_KB} KB of HTML (${heavy.slice(0, 3).join(", ")}${heavy.length > 3 ? "…" : ""}); move data and maps into shared files the browser caches, or make them smaller (README › Speed)`);
 if (problems.length) {
   console.error(`${problems.length} problem(s):\n` + problems.map((p) => "  - " + p).join("\n"));
   process.exit(1);

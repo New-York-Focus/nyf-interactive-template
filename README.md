@@ -63,8 +63,10 @@ Not checked automatically, but expected: `twitter:image:alt` (the same as `og:im
   they load on `nysfocus.com/interactives/…` but not on `workers.dev` previews, which show the fallbacks.
 - **Shared pieces:** `brand.css` also has the site's section header, a full-width yellow bar (`<h2 class="nyf-section-bar">`,
   inside a container padded by `--nyf-gutter`); the dek under the headline (`<p class="nyf-dek">` right after the `<h1>`);
-  a label above a list (`<p class="nyf-label">`, uppercase under a short yellow rule); and the site's 1366px frame for
-  data pages (`<main class="nyf-wide">`; article-like pages keep a narrow reading column). `site/index.html` uses them.
+  a sentence under a section bar on what the section shows (`<p class="nyf-section-dek">`); a label above a list
+  (`<p class="nyf-label">`, uppercase under a short yellow rule); secondary text such as "47% reporting" (`.nyf-meta`); and
+  the site's 1366px frame for data pages (`<main class="nyf-wide">`; article-like pages keep a narrow reading column).
+  `site/index.html` uses them.
 - **Footer:** the website's footer, as-is, at the end of every page. `brand/footer.html` is the website's `<footer>` with
   links made absolute; `brand/footer.css` is the website's own CSS rules for it, scoped to `.nyf-footer` after a reset, so
   the footer and the interactive can't restyle each other. `npm run build` (part of `npm test`) inserts both before
@@ -73,7 +75,8 @@ Not checked automatically, but expected: `twitter:image:alt` (the same as `og:im
   Sign Up) at the start of every page, the same way as the footer: `brand/header.html` and `brand/header.css`, scoped to
   `.nyf-header`, between `<!-- nyf-header… -->` and `<!-- /nyf-header -->`. On the site its menu runs on the site's JS
   bundle, which interactives don't load; `brand/header.js` does the same in a few lines (the sync turns the menu's
-  Alpine.js attributes into `data-nyf-*` ones it reads).
+  Alpine.js attributes into `data-nyf-*` ones it reads). Until nysfocus.com fixes them, the sync also gives the menu
+  icons `alt=""` and the logo link a name ("New York Focus"), which screen readers and Lighthouse need.
 - **Keeping them in sync:** when the website's header or footer changes, run `npm run footer:sync`, then `npm test`, look
   at a page and open a PR with `brand/` and `site/`. The "Footer sync check" GitHub Action compares them every morning and
   opens an issue when they differ (run it by hand from the Actions tab too).
@@ -91,6 +94,11 @@ Lessons from the 2026 election results maps:
 - **Gotchas:** give the cloned border paths a class, or a rule like `path:not([class]) { fill: … }` fills them and covers
   the map. An SVG element has no `.hidden` property: use `toggleAttribute("hidden", …)`. SVG text scales with the
   drawing: size map labels from the viewBox (e.g. `W / 46`), not in CSS pixels.
+- **Smaller maps:** inline SVG is most of a map page's weight. Snap coordinates to a grid and write paths as relative
+  steps (`l-.5 2.5 1.5.5`, not `L325.5,299L327,299.5`): the 2026 election results home page went from 1.24 MB to 0.74 MB
+  with identical shapes.
+- **Phones:** a map has to earn its scroll there. The election results home page hides its maps under 600px (the page
+  is 60% shorter); its race pages, where the map is the point, keep theirs.
 - **New York City:** a "New York State / New York City" switch showing one view at a time, both the same height
   (`aspect-ratio` on both SVGs), reads better than an inset or stacking them.
 - **Hover cards:** the place's own results in a small table (party dot, last name, votes, share), one `tip()` for every map.
@@ -99,6 +107,21 @@ Other patterns that worked: a winner's checkmark in a narrow last column, empty 
 call, with a CSS tooltip (`::after { content: attr(data-tip) }`) and an `aria-label`; a sticky map beside a list
 (`position: sticky` inside a grid), stacked on a phone. To measure nysfocus.com's styles, render saved copies of its
 pages with Playwright, outside requests blocked, and read the computed styles.
+
+## Speed
+Measured on the 2026 election results pages (Lighthouse, and a phone-speed Chromium), 2026-10-31:
+- **Nothing shifts after load.** Anything a script draws after the page loads (a results table, a chart, a list) starts
+  in the page at the size it will be: render it in the build with the same code, or reserve its space, including lines
+  that appear later ("Called by …"). The results table that replaced a shorter list was those pages' biggest layout shift.
+- **Images have `width` and `height`** (`npm test` fails one without), so their space is kept while they load.
+- **Pages stay under 500 KB of HTML** (`npm test` warns): a big page costs a phone time just to read, however fast the
+  connection. Move data and maps a page doesn't need at first into files the browser caches, or make them smaller (Maps).
+- **Hidden panels draw their content the first time they open.** `loading="lazy"` doesn't stop images in an off-canvas
+  panel from downloading: a live-updates panel was loading about 850 KB of photos on every visit.
+- **Third-party scripts** are the largest script cost: Google Tag Manager's tags (GA4 and a Google Ads conversion tag)
+  about 1.3s of a mid-range phone's processor, Cloudflare's bot check another 0.45s. Both are set outside the repo (in
+  Google Tag Manager, and in Cloudflare for all of nysfocus.com); don't add more without asking.
+- A floating button (bottom right) works alongside Wisepops, which opens in the center and can be closed.
 
 ## Cloudflare Worker settings (Kyle creates the Worker)
 Workers & Pages › Create › Worker › **Import a repository** (Workers Builds), choosing `New-York-Focus/nyf-<slug>`:

@@ -120,6 +120,8 @@ function partHtml(home, tag) {
 // The header's menu runs on Alpine.js on the site. Its attributes become data-nyf-* ones that brand/header.js reads:
 // :class="{ 'a': !open, 'b': open }" → data-nyf-closed="a" data-nyf-open="b"; @click="open = !open" → data-nyf-toggle.
 // The site adds "smaller" to <header> once the reader scrolls; here it is always there, for the short version.
+// Until nysfocus.com fixes them, two accessibility gaps are patched: images without alt (the menu icons, which the
+// button's own label describes) get alt="", and the logo link, an SVG with no text, gets a name.
 function headerHtml(home) {
   return partHtml(home, "header")
     .replace(/<header class="([^"]*)"/, (_, c) => `<header class="${c} smaller"`)
@@ -130,7 +132,9 @@ function headerHtml(home) {
     })
     .replace(/\s@click="open = !open"/g, " data-nyf-toggle")
     .replace(/\s(?:x-data|x-state:on|x-state:off|x-description|x-bind:aria-expanded)="[^"]*"/g, "")
-    .replace(/\sx-cloak\b/g, "");
+    .replace(/\sx-cloak\b/g, "")
+    .replace(/<img\b(?![^>]*\balt=)/g, '<img alt=""')
+    .replace(/<a\b(?![^>]*\baria-label=)([^>]*\bclass="logo\b)/, '<a aria-label="New York Focus"$1');
 }
 
 async function fromWebsite() {

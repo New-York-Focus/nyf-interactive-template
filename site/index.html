@@ -160,7 +160,10 @@
 </div>
 <!-- /nyf-header -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5GLGNHCQ" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- A section shelf, when an interactive has several sections: the page's own one has aria-current="page". -->
+<nav class="nyf-shelf" aria-label="Sections"><div class="nyf-shelf-row"><a href="./" aria-current="page">Overview</a><a href="detail/">A subpage</a></div></nav>
 <main>
+  <p class="nyf-kicker">A kicker: "Last updated at 10:42 p.m. ET on Nov. 3"</p>
   <h1>Example Interactive</h1>
   <p class="nyf-dek">A dek: one or two sentences under the headline on what readers will find here.</p>
   <!-- Links are relative: this page is served at nysfocus.com/interactives/example-interactive/. -->
@@ -168,7 +171,9 @@
   <p class="nyf-section-dek">A sentence on what this section shows.</p>
   <p class="nyf-label">A label above a list</p>
   <p><a href="detail/">A subpage</a> <span class="nyf-meta">Secondary text</span></p>
+  <p>A name with a tooltip<span class="nyf-tip" tabindex="0" role="img" aria-label="Incumbent" data-tip="Incumbent">&nbsp;(i)</span></p>
 </main>
+<script src="brand.js" defer></script>
 <script>
   // Data files load relative to the page too.
   fetch("data.json").then((r) => r.json()).then((d) => console.log(d.note));

@@ -21,6 +21,7 @@
     "brand/header.js",
     "brand/head.html",
     "site/brand.css",
+    "site/brand.js",
     ".github/workflows/check.yml",
     ".github/workflows/footer.yml",
     ".github/workflows/template.yml"

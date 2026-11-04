@@ -122,8 +122,23 @@ function partHtml(home, tag) {
 // The site adds "smaller" to <header> once the reader scrolls; here it is always there, for the short version.
 // Until nysfocus.com fixes them, two accessibility gaps are patched: images without alt (the menu icons, which the
 // button's own label describes) get alt="", and the logo link, an SVG with no text, gets a name.
+// The site's promo banner over its header (2026-11-04: "Follow live results… on our realtime election tracker", a link
+// on a dark band, one for wide screens and one for phones) isn't part of the short header (Decisions): it's dropped,
+// with the room the site makes for it (the nav's top padding, and as much off the fixed bar's offset), so a banner
+// coming and going on nysfocus.com changes nothing here.
+function withoutBanner(html) {
+  const banner = /\s*<div class="[^"]*\bw-full md:pb-6\b[^"]*">\s*<a\b[^>]*\bstyle="background:[^"]*"[^>]*>[\s\S]*?<\/a>\s*<\/div>/g;
+  if (!banner.test(html)) return html;
+  let room = 0;
+  return html.replace(banner, "")
+    .replace(/<nav class="([^"]*)"/, (_, c) => `<nav class="${c.replace(/\bmd:pt-\[(\d+)px\]/, (m, n) => { room = Number(n); return ""; })
+      .replace(/\bcollapseme\b/, "").trim()}"`)
+    .replace(/md:top-\[(\d+)px\]/, (m, n) => `md:top-[${Number(n) - room}px]`)
+    .replace(/ relative\s+"/, ' relative "');
+}
+
 function headerHtml(home) {
-  return partHtml(home, "header")
+  return withoutBanner(partHtml(home, "header"))
     .replace(/<header class="([^"]*)"/, (_, c) => `<header class="${c} smaller"`)
     .replace(/\s:class="\{([^"]*)\}"/g, (_, body) => {
       const closed = [], open = [];

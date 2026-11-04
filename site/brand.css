@@ -17,6 +17,13 @@
   --nyf-grey-dark: #4b4b4b;
   --nyf-white: #ffffff;
   --nyf-paper: #f6f5f2;         /* a very light warm gray: a band behind navigation (the section shelf) */
+  --nyf-black: #000000;
+  /* Tertiary, from the brand kit (Canva, 2026-11-04): for uses that need more colors to tell things apart (a chart's
+     series, states of a control), not for text or the main palette */
+  --nyf-blue-mid: #3361a7;
+  --nyf-blue-light: #638ecf;
+  --nyf-blue-pale: #d4deed;
+  --nyf-grey-light: #cccccc;
 
   /* Type: Knockout for headlines, labels and buttons (uppercase on the site), Chronicle for reading text */
   --nyf-font-headline: "Knockout 54 A", "Knockout 54 B", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;

@@ -114,6 +114,10 @@ change is logged in the repo:
   may set its dek in sans, as wide as the page (`.nyf-dek.nyf-dek-data`), and keep Chronicle for long reading only. Kyle
 - 2026-11-04 · Reader-facing text follows New York Focus's style guide: "US" without periods; the Oxford comma; office
   titles in full before a name; "Assemblymember", one word; "State Assembly" and "State Senate" (README › Brand). Kyle
+- 2026-11-04 · The brand kit's other colors join `brand.css` (Kyle, from Canva): `--nyf-black`, and as tertiary colors for
+  uses that need more colors to tell things apart, `--nyf-blue-mid` (#3361a7), `--nyf-blue-light` (#638ecf),
+  `--nyf-blue-pale` (#d4deed) and `--nyf-grey-light` (#cccccc). nysfocus.com stays the source of truth: Canva's yellow
+  (#f8bb47) and dark gray (#4c4c4c) are near-misses of the site's #f8bc47 and #4b4b4b, fixed in Canva. Kyle
 - 2026-11-04 · One type size per job (`--nyf-text-*` in `brand.css`): 12px capitals for breadcrumbs, a shelf, labels and
   meta lines (`.nyf-label` from 15px); 14px gray secondary text; 16px text, tables and controls; 18px a section's
   description; 20px the dek. Kyle

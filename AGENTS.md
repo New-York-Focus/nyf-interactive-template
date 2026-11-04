@@ -19,8 +19,11 @@ directly; Claude Code reads it through `CLAUDE.md`).
 - Server routes: the site stays plain static files in `site/`; server code, only if the project needs it, goes in
   `worker/` (`main` in `wrangler.jsonc`), with only what's deployed there: its tests and fixtures go in `test/`, run by
   the `test:project` script (CI runs it on every PR). List the routes in `assets.run_worker_first` so static pages are
-  served without running the code. The router strips `/interactives/<slug>`, so routes are the Worker's own paths.
-  - Routes readers' browsers call are GET only.
+  served without running the code (a live-data project may run it on its pages to write how fresh their data is into
+  them, any failure serving the page as built: README › Server routes). The router strips `/interactives/<slug>`, so
+  routes are the Worker's own paths.
+  - Routes readers' browsers call are GET only (the one exception: a route the router lists for POST, such as a
+    newsletter sign-up, which it allows only from a nysfocus.com page, with a shared secret the route checks).
   - A route that writes (an ingest, an admin action) checks a secret token (a Worker secret Kyle sets) in the
     `Authorization` header, is never cached, and is reached at the Worker's own `workers.dev` address (nysfocus.com is
     GET only). It's never called from a reader's browser; if an operator's browser posts to it (a script on a results
@@ -30,9 +33,9 @@ directly; Claude Code reads it through `CLAUDE.md`).
   - A timeout on every outside call, failures not cached, and never log what readers type or what's posted (queries,
     addresses, URLs, bodies): log the provider or route and the status only.
   - (The Pages project's Functions, in `functions/`, follow the same rules.)
-- Brand: style with the variables and shared classes in `site/brand.css` (README › Brand), and keep the font kit `<link>` on every page. The nysfocus.com header
-  and footer come from `brand/` (`npm run build` inserts them); never edit them in the pages. Update them with
-  `npm run footer:sync`.
+- Brand: style with the variables and shared classes in `site/brand.css` (README › Brand; `site/brand.js` for its
+  tooltips), and keep the font kit `<link>` on every page. The nysfocus.com header and footer come from `brand/`
+  (`npm run build` inserts them); never edit them in the pages. Update them with `npm run footer:sync`.
 - The shared `<head>` tags (icons, social) come from `brand/head.html`, inserted by `npm run build`; edit them
   there, never in the pages.
 - Never launch a page without an SEO `<title>` within 580px, a meta description within 920px, and a 1200×630 link-card
@@ -79,7 +82,8 @@ change is logged in the repo:
   cookie and its JS bundle stay off interactives (2026-10-29). Kyle
 - 2026-10-29 · Plausible tags every interactive pageview `event-category="Interactives"`. Kyle
 - 2026-10-29 · Link-card images carry no text (platforms show the title beside them): the graphic, a small ink logo top
-  left and a yellow rule along the bottom; one per page where pages differ. Kyle
+  left and a yellow rule along the bottom; one per page where pages differ. 2026-11-04, an accepted alternative: a project
+  with many pages that look alike (district maps) may put the page's name on its cards. Kyle
 - 2026-10-29 · What readers type never goes from the browser to an outside service; it goes through the project's own
   server routes. Kyle
 - 2026-10-29 · The header is the website's short version (the bar it shows once you scroll: logo, menu, Donate, Sign
@@ -102,9 +106,25 @@ change is logged in the repo:
 - 2026-10-30 · Spacing follows nysfocus.com: margins, padding and gaps come from its 8px scale (`--nyf-space-*` in
   `brand.css`), tight inside a group and generous between groups; text sits `--nyf-gutter` from the screen's edge (24px
   on a phone, 40px on a wide screen) and sections `--nyf-section` apart (32px, 48px from 768px), as on the site. Kyle
-- 2026-10-30 · Section headers are the site's full-width yellow bar (`.nyf-section-bar` in `brand.css`). Kyle
+- 2026-10-30 · Section headers are the site's full-width yellow bar (`.nyf-section-bar` in `brand.css`). 2026-11-04, an
+  accepted alternative: a dense dashboard with many sections may use a thin yellow rule and a heading in capitals
+  (`.nyf-section-rule`), where the bar reads too heavy. Kyle
 - 2026-10-30 · Data pages use the site's 1366px frame (`.nyf-wide`); article-like pages keep a narrow reading column. Kyle
-- 2026-10-31 · Deks under headlines are 20px at every width (`.nyf-dek`). Kyle
+- 2026-10-31 · Deks under headlines are 20px at every width (`.nyf-dek`). 2026-11-04, an accepted alternative: a data page
+  may set its dek in sans, as wide as the page (`.nyf-dek.nyf-dek-data`), and keep Chronicle for long reading only. Kyle
+- 2026-11-04 · Reader-facing text follows New York Focus's style guide: "US" without periods; the Oxford comma; office
+  titles in full before a name; "Assemblymember", one word; "State Assembly" and "State Senate" (README › Brand). Kyle
+- 2026-11-04 · One type size per job (`--nyf-text-*` in `brand.css`): 12px capitals for breadcrumbs, a shelf, labels and
+  meta lines (`.nyf-label` from 15px); 14px gray secondary text; 16px text, tables and controls; 18px a section's
+  description; 20px the dek. Kyle
+- 2026-11-04 · From the 2026 election results, shared: the kicker over the headline (`.nyf-kicker`), breadcrumbs as the
+  site's article categories in its dark gray (`.nyf-crumbs`, `--nyf-grey-dark`, replacing that project's #343434), the
+  section shelf (`.nyf-shelf`, on `--nyf-paper`, #f6f5f2, a very light warm gray added to the brand colors), tooltips kept
+  on the screen (`.nyf-tip`, `site/brand.js`), and the README's patterns for data tables, filters and maps. Kyle
+- 2026-11-04 · Election projects (README › Election projects): winners called (by the AP, or uncontested at poll
+  closing), never leaders; where no one calls the races, leads labeled as leads, never calls (the 2026 county
+  elections). The winner's ✓ after the name where the share has its own column, after the share where it's on the same
+  line; "(i)" for incumbents; the `--nyf-party-*` colors. Kyle
 
 <!-- nyf-template-sync: everything above this line comes from nyf-interactive-template (npm run template:sync replaces it); everything below is this project's own. -->
 ## This project

@@ -65,7 +65,25 @@ Not checked automatically, but expected: `twitter:image:alt` (the same as `og:im
   a sentence under a section bar on what the section shows (`<p class="nyf-section-dek">`); a label above a list
   (`<p class="nyf-label">`, uppercase under a short yellow rule); secondary text such as "47% reporting" (`.nyf-meta`); and
   the site's 1366px frame for data pages (`<main class="nyf-wide">`; article-like pages keep a narrow reading column).
-  `site/index.html` uses them.
+  From the 2026 election results: a kicker over the headline (`.nyf-kicker`: "Last updated at 10:42 p.m. ET on Nov. 3");
+  breadcrumbs styled as the site's article categories (`.nyf-crumbs`); a section shelf, a row of links to an
+  interactive's sections that sticks under the header (`.nyf-shelf`, on `--nyf-paper`, the page's own section with
+  `aria-current="page"`, underlined in yellow); and tooltips (`.nyf-tip` with `data-tip` and an `aria-label`, on hover,
+  focus or a tap, at most 12.5rem wide), which `site/brand.js` keeps 8px inside the screen (load it with
+  `<script src="brand.js" defer>`). `site/index.html` and `site/detail/index.html` use them.
+- **Type sizes, one per job** (`--nyf-text-*` in `brand.css`): 12px capitals for breadcrumbs, a shelf, labels and meta
+  lines ("47% of election districts reporting", "Called by the Associated Press at 10:30 p.m. ET"); 14px gray for
+  secondary text (a kicker, a source line, a party under a name, map legends); 16px for text, tables and controls; 18px
+  for a section's description; 20px for the dek. Between a page's blocks, a section gap (`--nyf-section`), never stacked
+  margins.
+- **Editorial style** (New York Focus's style guide, in reader-facing text): "US" without periods ("US House"); the
+  Oxford comma; office titles in full before a name ("Governor Kathy Hochul", "Representative Mike Lawler", "State
+  Senator Leroy Comrie Jr."); "Assemblymember", one word; "State Assembly" and "State Senate", the chambers' legal names.
+  Candidates' and officials' names as the official source has them.
+- **Accepted alternatives** (Decisions): a dense dashboard with many sections may head them with a thin yellow rule and a
+  heading in capitals (`.nyf-section-rule`) instead of the full bar; a data page may set its dek in sans, as wide as the
+  page (`.nyf-dek.nyf-dek-data`), and keep Chronicle for long reading only (a live blog's posts); a project with many
+  pages that look alike (district maps) may put the page's name on its link cards.
 - **Footer:** the website's footer, as-is, at the end of every page. `brand/footer.html` is the website's `<footer>` with
   links made absolute; `brand/footer.css` is the website's own CSS rules for it, scoped to `.nyf-footer` after a reset, so
   the footer and the interactive can't restyle each other. `npm run build` (part of `npm test`) inserts both before
@@ -101,17 +119,56 @@ Lessons from the 2026 election results maps:
 - **New York City:** a "New York State / New York City" switch showing one view at a time, both the same height
   (`aspect-ratio` on both SVGs), reads better than an inset or stacking them.
 - **Hover cards:** the place's own results in a small table (party dot, last name, votes, share), one `tip()` for every map.
+  Place a card against what it's actually positioned in (its `offsetParent`), not the map you assume it is: when a phone
+  layout made the map `position: static`, every card showed far above the tap. Keep it on the screen: below and right of
+  the point, or above it when there's no room below.
+- **Legends** go under the map and name only what's on it: a color's key appears once that color is drawn (a third
+  party, a tie), not before.
+- **Filtered maps:** places a filter leaves out turn a flat light gray, so the state keeps its shape; those shown keep
+  their color with an ink outline. A fade all but erased the state.
 
-Other patterns that worked: a winner's checkmark in a narrow last column, empty on other rows so nothing shifts before a
-call, with a CSS tooltip (`::after { content: attr(data-tip) }`) and an `aria-label`; a sticky map beside a list
+Other patterns that worked: a sticky map beside a list
 (`position: sticky` inside a grid), stacked on a phone. To measure nysfocus.com's styles, render saved copies of its
 pages with Playwright, outside requests blocked, and read the computed styles.
+
+## Tables and filters
+- **Data tables:** a row's color is a bar at its start, not a dot, so the name and the line under it start the same
+  distance from it; dots stay where they label one line (legends, hover cards, column heads). Tables sort by any column
+  (`aria-sort` on the header). On a phone, a wide table scrolls sideways in its own box with its first column pinned, so
+  no page is wider than the screen, and a column that doesn't fit (votes) goes under the one beside it (the share).
+- **Filters:** behind a quiet "Filters" button, closed at first; groups of options, each on or off, one per group (no
+  "All": none on is everything), each with its count, the groups combined; while any is on, "Showing 22 of 150
+  districts: open, contested · Clear filters" under the button. The choice goes in the page's address
+  (`?seat=open&race=contested`) so a link opens on it. Counts that change with live data are counted again on each load,
+  and an option with none stays on offer. On a wide screen the groups sit on one line, above the table and the map.
+
+## Election projects
+From the 2026 general election results (`nyf-2026-election-results`, its Decisions), for primaries and generals to come:
+- **Winners called, never leaders:** a race is called when the Associated Press calls it, or when it's uncontested (as
+  many candidates as seats, or fewer) once the polls close; nobody is "leading" or "trailing", since which districts
+  have reported isn't known. Candidates are sorted by votes, with their shares and how many election districts have
+  reported. An accepted alternative where no one calls the races (the 2026 county elections, from counties' unofficial
+  counts): leads, labeled as leads, and never calls.
+- **The winner's ✓:** right after the name where the share has a column of its own (a results table), after the share
+  where it follows the name on the same line ("Meeks 80.5% ✓"); joined to the word before it so it never wraps alone; a
+  tooltip (`.nyf-tip`) says who called it and when.
+- **Incumbents:** "(i)" after the name, as the AP does (lowercase, so it doesn't read as Independent), joined to the
+  name, "Incumbent" in its tooltip.
+- **Party colors:** `--nyf-party-*` in `brand.css`, two shades each (the lighter for a margin under 10 points on a map),
+  checked for color-blind readers; a race's party is its candidate's first line; votes on a candidate's lines combined
+  by default.
+- **Freshness:** a page with live results says when they were last updated over its headline ("Last updated at 10:42
+  p.m. ET on Nov. 3", the official source's time), and names a part that's gone quiet. Search engines read that time from
+  the page itself: write it, the page's `dateModified` and the sitemap's `<lastmod>` into the page as it's served (the
+  election results' `worker/fresh.js`).
 
 ## Speed
 Measured on the 2026 election results pages (Lighthouse, and a phone-speed Chromium), 2026-10-31:
 - **Nothing shifts after load.** Anything a script draws after the page loads (a results table, a chart, a list) starts
   in the page at the size it will be: render it in the build with the same code, or reserve its space, including lines
   that appear later ("Called by …"). The results table that replaced a shorter list was those pages' biggest layout shift.
+- **Controls keep one height whatever the font.** A switch sized by its text was a pixel taller in Safari than elsewhere,
+  nudging the map under it; give such controls a fixed height (and line height).
 - **Images have `width` and `height`** (`npm test` fails one without), so their space is kept while they load.
 - **Pages stay under 500 KB of HTML** (`npm test` warns): a big page costs a phone time just to read, however fast the
   connection. Move data and maps a page doesn't need at first into files the browser caches, or make them smaller (Maps).
@@ -143,6 +200,10 @@ The rest of the Worker's settings live in `wrangler.jsonc`, which every deploy a
 ## Server routes and tests (only if a project needs them)
 - **Code:** `worker/`, with `main` in `wrangler.jsonc`, and only what's deployed. List its routes in
   `assets.run_worker_first` so static pages don't run it. `AGENTS.md` › Rules has the rules for reader and write routes.
+- **Accepted alternatives** (Decisions): a live-data project may run its Worker on its pages too, to write how fresh their
+  data is into them, as long as any failure serves the page as built. A route a reader's browser posts to (a newsletter
+  sign-up) is allowed only through the router's list for that route, which checks the request comes from a nysfocus.com
+  page and adds a shared secret the route checks.
 - **Paths:** the `nyf-interactives` router removes `/interactives/<slug>` before a request reaches the Worker, so
   `nysfocus.com/interactives/<slug>/api/x` arrives as `/api/x`. Write routes aren't reached through nysfocus.com at
   all: they're called at the Worker's `workers.dev` address.

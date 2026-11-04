@@ -111,7 +111,7 @@ for (const f of pages(dir)) {
   if (!html.includes('href="https://cloud.typography.com/14378/7423632/css/fonts.css"')) fail(f, "missing the font kit <link> (https://cloud.typography.com/14378/7423632/css/fonts.css)");
 }
 
-// The nysfocus.com header and footer and the shared <head> tags (Wisepops, icons, social), exactly as in brand/ (npm run
+// The nysfocus.com header and footer and the shared <head> tags (icons, social), exactly as in brand/ (npm run
 // build puts them there), on every page and 404.html.
 const footer = footerBlock("footer"), header = footerBlock("header"), head = headBlock();
 for (const f of htmlFiles(dir)) {

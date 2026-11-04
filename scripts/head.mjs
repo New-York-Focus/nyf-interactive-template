@@ -1,5 +1,5 @@
-// The shared New York Focus <head> tags on every page, from brand/head.html: Wisepops (the popups on nysfocus.com), the
-// site's icons, the social tags that are the same on every page, and a font preconnect. Part of npm run build:
+// The shared New York Focus <head> tags on every page, from brand/head.html: the site's icons, the social tags that are
+// the same on every page, and a font preconnect. Part of npm run build:
 //   node scripts/head.mjs [site dir]
 // Page-specific tags (title, description, canonical, og:url, og:image and its alt text) stay in each page.
 import { readFileSync, writeFileSync } from "node:fs";

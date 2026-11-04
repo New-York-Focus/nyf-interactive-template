@@ -33,7 +33,7 @@ directly; Claude Code reads it through `CLAUDE.md`).
 - Brand: style with the variables and shared classes in `site/brand.css` (README › Brand), and keep the font kit `<link>` on every page. The nysfocus.com header
   and footer come from `brand/` (`npm run build` inserts them); never edit them in the pages. Update them with
   `npm run footer:sync`.
-- The shared `<head>` tags (Wisepops, icons, social) come from `brand/head.html`, inserted by `npm run build`; edit them
+- The shared `<head>` tags (icons, social) come from `brand/head.html`, inserted by `npm run build`; edit them
   there, never in the pages.
 - Never launch a page without an SEO `<title>` within 580px, a meta description within 920px, and a 1200×630 link-card
   image (`og:image`, with alt text) of its own; `npm test` enforces these, and the placeholder `share.png` doesn't count.
@@ -74,8 +74,9 @@ change is logged in the repo:
 - 2026-10-29 · Tracking isn't held for cookie consent, the same as nysfocus.com. Kyle
 - 2026-10-29 · Knockout's "1" (which can read as "I") is kept, as on nysfocus.com. Check numerals in small labels when
   choosing a new headline font. Kyle
-- 2026-10-29 · Wisepops runs on every page (which campaigns show where is set in Wisepops). AdSense, the site's
-  "articles read" cookie and its JS bundle stay off interactives. Kyle
+- 2026-11-04 · No Wisepops on interactives (replacing "Wisepops runs on every page", 2026-10-29: its monthly pageviews ran
+  out on election night, and a project uses its own newsletter sign-up instead). AdSense, the site's "articles read"
+  cookie and its JS bundle stay off interactives (2026-10-29). Kyle
 - 2026-10-29 · Plausible tags every interactive pageview `event-category="Interactives"`. Kyle
 - 2026-10-29 · Link-card images carry no text (platforms show the title beside them): the graphic, a small ink logo top
   left and a yellow rule along the bottom; one per page where pages differ. Kyle

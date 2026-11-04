@@ -39,8 +39,7 @@ The quickest way: open an AI agent session (Claude Code, Codex) on this repo and
   Plausible like article categories) and the Google Tag Manager snippet, exactly as in `site/index.html`.
 - **Brand fonts** on every page: the nysfocus.com font kit `<link>`, as in `site/index.html`.
 - **The nysfocus.com header and footer** on every page and `404.html`, exactly as in `brand/`. `npm run build` puts them there; don't edit them in the pages.
-- **The shared head tags** on every page and `404.html`, exactly as in `brand/head.html`: Wisepops (the newsletter and donation
-  popups on nysfocus.com; which campaigns show where is set in Wisepops), the site's icons, the social tags that are the
+- **The shared head tags** on every page and `404.html`, exactly as in `brand/head.html`: the site's icons, the social tags that are the
   same on every page (`og:site_name`, `twitter:site`…) and a font preconnect. `npm run build` puts them before `</head>`.
 
 - **Search and link cards, on every page** (a project can't launch without them):
@@ -121,7 +120,6 @@ Measured on the 2026 election results pages (Lighthouse, and a phone-speed Chrom
 - **Third-party scripts** are the largest script cost: Google Tag Manager's tags (GA4 and a Google Ads conversion tag)
   about 1.3s of a mid-range phone's processor, Cloudflare's bot check another 0.45s. Both are set outside the repo (in
   Google Tag Manager, and in Cloudflare for all of nysfocus.com); don't add more without asking.
-- A floating button (bottom right) works alongside Wisepops, which opens in the center and can be closed.
 
 ## Cloudflare Worker settings (Kyle creates the Worker)
 Workers & Pages › Create › Worker › **Import a repository** (Workers Builds), choosing `New-York-Focus/nyf-<slug>`:

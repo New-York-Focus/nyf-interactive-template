@@ -114,7 +114,8 @@ change is logged in the repo:
   may set its dek in sans, as wide as the page (`.nyf-dek.nyf-dek-data`), and keep Chronicle for long reading only. Kyle
 - 2026-11-04 · Reader-facing text follows New York Focus's style guide: "US" without periods; the Oxford comma; office
   titles in full before a name; "Assemblymember", one word; "State Assembly" and "State Senate" (README › Brand).
-  2026-11-05: months spelled out ("October 24"), abbreviated only where a heading or label must be brief. Kyle
+  2026-11-05: months spelled out ("October 24"), abbreviated only where a heading or label must be brief; times as
+  "10:30 pm", not "p.m.". Kyle
 - 2026-11-04 · The brand kit's other colors join `brand.css` (Kyle, from Canva): `--nyf-black`, and as tertiary colors for
   uses that need more colors to tell things apart, `--nyf-blue-mid` (#3361a7), `--nyf-blue-light` (#638ecf),
   `--nyf-blue-pale` (#d4deed) and `--nyf-grey-light` (#cccccc). nysfocus.com stays the source of truth: Canva's yellow

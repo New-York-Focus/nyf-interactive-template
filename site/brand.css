@@ -114,7 +114,7 @@ h1:has(+ .nyf-dek) { margin-bottom: 0; }
 }
 
 /* --- From the 2026 election results (2026-11-04): pieces any interactive can use --------------------------------- */
-/* The kicker over the headline: "Last updated at 10:42 p.m. ET on Nov. 3", or a short label. <p class="nyf-kicker"> */
+/* The kicker over the headline: "Last updated at 10:42 pm ET on Nov. 3", or a short label. <p class="nyf-kicker"> */
 .nyf-kicker {
   margin: 0;
   font: 400 var(--nyf-text-small)/1.3 var(--nyf-font-sans);

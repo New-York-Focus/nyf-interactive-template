@@ -72,14 +72,14 @@ Not checked automatically, but expected: `twitter:image:alt` (the same as `og:im
   a sentence under a section bar on what the section shows (`<p class="nyf-section-dek">`); a label above a list
   (`<p class="nyf-label">`, uppercase under a short yellow rule); secondary text such as "47% reporting" (`.nyf-meta`); and
   the site's 1366px frame for data pages (`<main class="nyf-wide">`; article-like pages keep a narrow reading column).
-  From the 2026 election results: a kicker over the headline (`.nyf-kicker`: "Last updated at 10:42 p.m. ET on Nov. 3");
+  From the 2026 election results: a kicker over the headline (`.nyf-kicker`: "Last updated at 10:42 pm ET on Nov. 3");
   breadcrumbs styled as the site's article categories (`.nyf-crumbs`); a section shelf, a row of links to an
   interactive's sections that sticks under the header (`.nyf-shelf`, on `--nyf-paper`, the page's own section with
   `aria-current="page"`, underlined in yellow); and tooltips (`.nyf-tip` with `data-tip` and an `aria-label`, on hover,
   focus or a tap, at most 12.5rem wide), which `site/brand.js` keeps 8px inside the screen (load it with
   `<script src="brand.js" defer>`). `site/index.html` and `site/detail/index.html` use them.
 - **Type sizes, one per job** (`--nyf-text-*` in `brand.css`): 12px capitals for breadcrumbs, a shelf, labels and meta
-  lines ("47% of election districts reporting", "Called by the Associated Press at 10:30 p.m. ET"); 14px gray for
+  lines ("47% of election districts reporting", "Called by the AP at 10:30 pm ET on Nov. 3"); 14px gray for
   secondary text (a kicker, a source line, a party under a name, map legends); 16px for text, tables and controls; 18px
   for a section's description; 20px for the dek. Between a page's blocks, a section gap (`--nyf-section`), never stacked
   margins.
@@ -88,7 +88,9 @@ Not checked automatically, but expected: `twitter:image:alt` (the same as `og:im
   Senator Leroy Comrie Jr."); "Assemblymember", one word; "State Assembly" and "State Senate", the chambers' legal names.
   Candidates' and officials' names as the official source has them. Months spelled out in sentences and source lines
   ("registered by the October 24 deadline", "registered voters as of November 1"); abbreviated only where a heading or
-  label must be brief ("Last updated at 10:42 p.m. ET on Nov. 3").
+  label must be brief ("Last updated at 10:42 pm ET on Nov. 3"). Times as "10:42 pm" and "12:50 am", not the AP's
+  "p.m." (New York Focus's style guide); with the day where they can span days ("Called by the AP at 10:30 pm ET on
+  Nov. 4": the 2026 election results' calls came over three days).
 - **Accepted alternatives** (Decisions): a dense dashboard with many sections may head them with a thin yellow rule and a
   heading in capitals (`.nyf-section-rule`) instead of the full bar; a data page may set its dek in sans, as wide as the
   page (`.nyf-dek.nyf-dek-data`), and keep Chronicle for long reading only (a live blog's posts); a project with many
@@ -203,7 +205,7 @@ From the 2026 general election results (`nyf-2026-election-results`, its Decisio
   the congress-legislators project (House). Said by the party that gained the seat, in its color: "D flip" under the
   district, a filter's options "Dem +2" and "Rep +1"; arrows ("2 R → D · 1 D → R") had to be parsed to be read.
 - **Freshness:** a page with live results says when they were last updated over its headline ("Last updated at 10:42
-  p.m. ET on Nov. 3", the official source's time), and names a part that's gone quiet. Search engines read that time from
+  pm ET on Nov. 3", the official source's time), and names a part that's gone quiet. Search engines read that time from
   the page itself: write it, the page's `dateModified` and the sitemap's `<lastmod>` into the page as it's served (the
   election results' `worker/fresh.js`).
 - **Google's LIVE label:** Google shows the red LIVE label in Top Stories only on a page marked up as a schema.org

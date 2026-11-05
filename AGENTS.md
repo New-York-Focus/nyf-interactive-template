@@ -34,7 +34,7 @@ directly; Claude Code reads it through `CLAUDE.md`).
     addresses, URLs, bodies): log the provider or route and the status only.
   - (The Pages project's Functions, in `functions/`, follow the same rules.)
 - Brand: style with the variables and shared classes in `site/brand.css` (README › Brand; `site/brand.js` for its
-  tooltips), and keep the font kit `<link>` on every page. The nysfocus.com header and footer come from `brand/`
+  tooltips), and keep the font kit `<link>`, with `referrerpolicy="origin"`, on every page. The nysfocus.com header and footer come from `brand/`
   (`npm run build` inserts them); never edit them in the pages. Update them with `npm run footer:sync`.
 - The shared `<head>` tags (icons, social) come from `brand/head.html`, inserted by `npm run build`; edit them
   there, never in the pages.
@@ -113,7 +113,8 @@ change is logged in the repo:
 - 2026-10-31 · Deks under headlines are 20px at every width (`.nyf-dek`). 2026-11-04, an accepted alternative: a data page
   may set its dek in sans, as wide as the page (`.nyf-dek.nyf-dek-data`), and keep Chronicle for long reading only. Kyle
 - 2026-11-04 · Reader-facing text follows New York Focus's style guide: "US" without periods; the Oxford comma; office
-  titles in full before a name; "Assemblymember", one word; "State Assembly" and "State Senate" (README › Brand). Kyle
+  titles in full before a name; "Assemblymember", one word; "State Assembly" and "State Senate" (README › Brand).
+  2026-11-05: months spelled out ("October 24"), abbreviated only where a heading or label must be brief. Kyle
 - 2026-11-04 · The brand kit's other colors join `brand.css` (Kyle, from Canva): `--nyf-black`, and as tertiary colors for
   uses that need more colors to tell things apart, `--nyf-blue-mid` (#3361a7), `--nyf-blue-light` (#638ecf),
   `--nyf-blue-pale` (#d4deed) and `--nyf-grey-light` (#cccccc). nysfocus.com stays the source of truth: Canva's yellow

@@ -37,7 +37,8 @@ The quickest way: open an AI agent session (Claude Code, Codex) on this repo and
 - **No keys or tokens in the repo.** Kyle enters secrets in Cloudflare himself.
 - **Analytics** on every page: the Plausible script (tagged `event-category="Interactives"`, so interactives can be filtered in
   Plausible like article categories) and the Google Tag Manager snippet, exactly as in `site/index.html`.
-- **Brand fonts** on every page: the nysfocus.com font kit `<link>`, as in `site/index.html`.
+- **Brand fonts** on every page: the nysfocus.com font kit `<link>`, as in `site/index.html`, with
+  `referrerpolicy="origin"`.
 - **The nysfocus.com header and footer** on every page and `404.html`, exactly as in `brand/`. `npm run build` puts them there; don't edit them in the pages.
 - **The shared head tags** on every page and `404.html`, exactly as in `brand/head.html`: the site's icons, the social tags that are the
   same on every page (`og:site_name`, `twitter:site`…) and a font preconnect. `npm run build` puts them before `</head>`.
@@ -61,7 +62,11 @@ Not checked automatically, but expected: `twitter:image:alt` (the same as `og:im
   to `--nyf-space-8`, with `--nyf-gutter` and `--nyf-section`, which grow with the screen as the site's do). Space things
   as the site does: tight inside a group, generous between groups. Link the font kit and `brand.css` from every page, as `site/index.html`
   does, and style with the variables. The fonts (Knockout and Chronicle, from Hoefler&Co) are licensed for nysfocus.com:
-  they load on `nysfocus.com/interactives/…` but not on `workers.dev` previews, which show the fallbacks.
+  they load on `nysfocus.com/interactives/…` but not on `workers.dev` previews, which show the fallbacks. The kit checks
+  the referrer and refuses a request without one (403), so its link carries `referrerpolicy="origin"`, which sends
+  `https://nysfocus.com/` whatever the page's own policy: the 2026 election results set `no-referrer` for X's video
+  server, and Safari then showed pages without their fonts, mostly links opened from email and social apps
+  (2026-11-05). `npm test` checks it.
 - **Shared pieces:** `brand.css` also has the site's section header, a full-width yellow bar (`<h2 class="nyf-section-bar">`,
   inside a container padded by `--nyf-gutter`); the dek under the headline (`<p class="nyf-dek">` right after the `<h1>`);
   a sentence under a section bar on what the section shows (`<p class="nyf-section-dek">`); a label above a list
@@ -81,7 +86,9 @@ Not checked automatically, but expected: `twitter:image:alt` (the same as `og:im
 - **Editorial style** (New York Focus's style guide, in reader-facing text): "US" without periods ("US House"); the
   Oxford comma; office titles in full before a name ("Governor Kathy Hochul", "Representative Mike Lawler", "State
   Senator Leroy Comrie Jr."); "Assemblymember", one word; "State Assembly" and "State Senate", the chambers' legal names.
-  Candidates' and officials' names as the official source has them.
+  Candidates' and officials' names as the official source has them. Months spelled out in sentences and source lines
+  ("registered by the October 24 deadline", "registered voters as of November 1"); abbreviated only where a heading or
+  label must be brief ("Last updated at 10:42 p.m. ET on Nov. 3").
 - **Accepted alternatives** (Decisions): a dense dashboard with many sections may head them with a thin yellow rule and a
   heading in capitals (`.nyf-section-rule`) instead of the full bar; a data page may set its dek in sans, as wide as the
   page (`.nyf-dek.nyf-dek-data`), and keep Chronicle for long reading only (a live blog's posts); a project with many
@@ -124,6 +131,22 @@ Lessons from the 2026 election results maps:
   Place a card against what it's actually positioned in (its `offsetParent`), not the map you assume it is: when a phone
   layout made the map `position: static`, every card showed far above the tap. Keep it on the screen: below and right of
   the point, or above it when there's no room below.
+- **A tap isn't a click.** If a map does something different for a mouse and a finger (a click opens a district, a
+  first tap shows its card; a click scrolls to the place's row in a table, a tap doesn't), read the pointer type from
+  the press, not the click: Safari on an iPhone reports a tap's `click` as `pointerType: "mouse"`, and Chrome, where
+  you test, doesn't. On the 2026 election results every tap scrolled the page to the county table, and a first tap
+  opened a district's page (2026-11-05):
+
+  ```js
+  let pressedWith = "mouse";
+  map.addEventListener("pointerdown", (e) => { pressedWith = e.pointerType || "mouse"; });
+  map.addEventListener("click", (e) => {
+    const mouse = (e.detail === 0 ? "mouse" : pressedWith) === "mouse";   // Enter on a keyboard: as a mouse
+    // …
+  });
+  ```
+  To test it in Chrome, make a click's `pointerType` say "mouse" as Safari does (override its getter on
+  `PointerEvent.prototype` in an init script) and tap with Playwright's touchscreen.
 - **Legends** go under the map and name only what's on it: a color's key appears once that color is drawn (a third
   party, a tie), not before.
 - **Filtered maps:** places a filter leaves out turn a flat light gray, so the state keeps its shape; those shown keep
@@ -136,8 +159,17 @@ pages with Playwright, outside requests blocked, and read the computed styles.
 ## Tables and filters
 - **Data tables:** a row's color is a bar at its start, not a dot, so the name and the line under it start the same
   distance from it; dots stay where they label one line (legends, hover cards, column heads). Tables sort by any column
-  (`aria-sort` on the header). On a phone, a wide table scrolls sideways in its own box with its first column pinned, so
-  no page is wider than the screen, and a column that doesn't fit (votes) goes under the one beside it (the share).
+  (`aria-sort` on the header), the arrow joined to its label by a non-breaking space (`content: "\00a0▼"`) so it
+  never drops to a line of its own. On a phone, a wide table scrolls sideways in its own box with its first column
+  pinned, so no page is wider than the screen. A column that doesn't fit can go under the one beside it where that
+  second line is secondary (a results table's votes under each share); but where the share is the thing to read (a
+  turnout table), keep each row to one line and give the column more room instead: counts under the shares made them
+  harder to read (2026-11-05).
+- **A row still in progress** (a county still counting): its row in the brand's cream with light diagonal stripes, as
+  its map shape is hatched (`repeating-linear-gradient(135deg, rgb(12 35 41 / .07) 0 1.5px, transparent 1.5px 6px),
+  var(--nyf-cream)` on the `<tr>`, and its cells transparent, so the stripes run on across them), and its name a
+  tooltip with the detail ("93% of election districts reporting (1,006 of 1,083)"). No column for it, and no key over
+  the table: the stripes read as "in progress", and the tooltip says the rest.
 - **Filters:** behind a quiet "Filters" button, closed at first; groups of options, each on or off, one per group (no
   "All": none on is everything), each with its count, the groups combined; while any is on, "Showing 22 of 150
   districts: open, contested · Clear filters" under the button. The choice goes in the page's address
@@ -159,6 +191,17 @@ From the 2026 general election results (`nyf-2026-election-results`, its Decisio
 - **Party colors:** `--nyf-party-*` in `brand.css`, two shades each (the lighter for a margin under 10 points on a map),
   checked for color-blind readers; a race's party is its candidate's first line; votes on a candidate's lines combined
   by default.
+- **Turnout:** ballots over everyone who could vote. In New York, with no same-day registration, that's everyone
+  registered by the deadline, active and inactive (inactive voters can still vote), as the footnote says: "a share of
+  eligible voters: everyone registered to vote by the October 24 deadline". Both numbers from one source, the state's:
+  ballots as the top race's total votes (every candidate, write-ins, blank and void: every ballot has the race),
+  registration from the board's enrollment file; not another source's estimate (the UF Election Lab's turnout is over
+  every eligible citizen, registered or not). Labeled unofficial, with which ballots are still out (late mail ballots,
+  military and overseas ballots, affidavit ballots), until the results are certified.
+- **Seats flipped:** a called seat whose winner's party (their first line) isn't the party of the seat's sitting member,
+  or its last member's if it's vacant (by hand). Every seat's holder, running or not, from Open States (Legislature) and
+  the congress-legislators project (House). Said by the party that gained the seat, in its color: "D flip" under the
+  district, a filter's options "Dem +2" and "Rep +1"; arrows ("2 R → D · 1 D → R") had to be parsed to be read.
 - **Freshness:** a page with live results says when they were last updated over its headline ("Last updated at 10:42
   p.m. ET on Nov. 3", the official source's time), and names a part that's gone quiet. Search engines read that time from
   the page itself: write it, the page's `dateModified` and the sitemap's `<lastmod>` into the page as it's served (the

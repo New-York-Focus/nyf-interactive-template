@@ -107,8 +107,12 @@ for (const f of pages(dir)) {
   // Analytics: the same Plausible site and Tag Manager container as nysfocus.com, so readers are counted.
   if (!/<script\b[^>]*data-domain=["']nysfocus\.com["'][^>]*src=["']https:\/\/stats\.gridwork\.co\/js\/script\.pageview-props\.js["'][^>]*event-category=["']Interactives["']/i.test(html)) fail(f, "missing the Plausible script (data-domain=\"nysfocus.com\", script.pageview-props.js, event-category=\"Interactives\")");
   if (!html.includes("GTM-5GLGNHCQ")) fail(f, "missing the Google Tag Manager snippet (GTM-5GLGNHCQ)");
-  // Brand: the nysfocus.com font kit (the footer and brand.css need it).
-  if (!html.includes('href="https://cloud.typography.com/14378/7423632/css/fonts.css"')) fail(f, "missing the font kit <link> (https://cloud.typography.com/14378/7423632/css/fonts.css)");
+  // Brand: the nysfocus.com font kit (the footer and brand.css need it). Its link sends the site's address whatever the
+  // page's referrer policy: the kit refuses a request without one (403), and a page with no-referrer (for an outside
+  // video server, say) showed no fonts in Safari (2026 election results, 2026-11-05).
+  const kit = html.match(/<link\b[^>]*href="https:\/\/cloud\.typography\.com\/14378\/7423632\/css\/fonts\.css"[^>]*>/);
+  if (!kit) fail(f, "missing the font kit <link> (https://cloud.typography.com/14378/7423632/css/fonts.css)");
+  else if (!/\sreferrerpolicy="origin"/.test(kit[0])) fail(f, 'the font kit <link> needs referrerpolicy="origin" (the kit refuses a request without a referrer)');
 }
 
 // The nysfocus.com header and footer and the shared <head> tags (icons, social), exactly as in brand/ (npm run

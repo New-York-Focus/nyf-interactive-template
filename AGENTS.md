@@ -125,6 +125,8 @@ change is logged in the repo:
   site's article categories in its dark gray (`.nyf-crumbs`, `--nyf-grey-dark`, replacing that project's #343434), the
   section shelf (`.nyf-shelf`, on `--nyf-paper`, #f6f5f2, a very light warm gray added to the brand colors), tooltips kept
   on the screen (`.nyf-tip`, `site/brand.js`), and the README's patterns for data tables, filters and maps. Kyle
+- 2026-11-04 · Live coverage (a live updates feed) is marked up as a schema.org `LiveBlogPosting` while it's live, for
+  Google's LIVE label in Top Stories (README › Election projects; from the 2026 election results, where it worked). Kyle
 - 2026-11-04 · Election projects (README › Election projects): winners called (by the AP, or uncontested at poll
   closing), never leaders; where no one calls the races, leads labeled as leads, never calls (the 2026 county
   elections). The winner's ✓ after the name where the share has its own column, after the share where it's on the same

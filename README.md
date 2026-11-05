@@ -163,6 +163,20 @@ From the 2026 general election results (`nyf-2026-election-results`, its Decisio
   p.m. ET on Nov. 3", the official source's time), and names a part that's gone quiet. Search engines read that time from
   the page itself: write it, the page's `dateModified` and the sitemap's `<lastmod>` into the page as it's served (the
   election results' `worker/fresh.js`).
+- **Google's LIVE label:** Google shows the red LIVE label in Top Stories only on a page marked up as a schema.org
+  `LiveBlogPosting`; a `WebPage` with a fresh `dateModified` gets "2 hours ago" instead. On the 2026 election results,
+  adding it put the home page in Top Stories with the label beside NBC's and the New York Times's within the hour
+  (2026-11-04). Add it to the page with the live coverage (a live updates feed: that project's home page) as the Worker
+  serves it, and only while the coverage is live:
+  - `coverageStartTime`: when the coverage started (the feed was turned on); `coverageEndTime`: when it ends (the feed's
+    hard stop). Google drops the label after the end, so move the end, not the markup, to extend the coverage.
+  - `liveBlogUpdate`: the newest updates (10), each a `BlogPosting` with a `headline` (its text, cut to 110 characters),
+    `articleBody`, `datePublished`, `url` and `author`; the updates must be ones a reader can see on the page.
+  - `headline`, `url`, `image` and `publisher` as the page's own (its `og:title`, canonical and link card).
+  - Nothing before there's an update, after the end, or on any other page; on any failure, the page as built.
+  - The election results' `liveBlog` in `worker/fresh.js` (and its tests in `test/fresh.test.js`) does all of this; copy
+    it. Check the live page with Google's Rich Results Test ("Live blog"), and ask for a recrawl in Search Console (URL
+    Inspection › Request indexing) to have Google see it sooner. The label is Google's to show, and not promised.
 
 ## Speed
 Measured on the 2026 election results pages (Lighthouse, and a phone-speed Chromium), 2026-10-31:

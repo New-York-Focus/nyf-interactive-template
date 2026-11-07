@@ -24,8 +24,15 @@ export function htmlFiles(dir) {
   return out.sort();
 }
 
-// Pages are folders: "index.html" and "county/erie/index.html". 404.html is not a page.
-export const pages = (dir) => htmlFiles(dir).filter((f) => f === "index.html" || f.endsWith("/index.html"))
+// An embed: a chart or map made only to sit in an iframe in a nysfocus.com article (Kyle, 2026-11-07), marked
+// <meta name="nyf-embed">. Not a page: no header, footer, shared head tags or analytics (the article around it has them,
+// and counts the reader once), out of the sitemap and out of search (noindex). npm test checks each one for that.
+export const EMBED = /<meta\s[^>]*name=["']nyf-embed["']/i;
+export const isEmbed = (dir, f) => EMBED.test(readFileSync(join(dir, f), "utf8"));
+export const embeds = (dir) => htmlFiles(dir).filter((f) => isEmbed(dir, f));
+
+// Pages are folders: "index.html" and "county/erie/index.html". 404.html and embeds are not pages.
+export const pages = (dir) => htmlFiles(dir).filter((f) => (f === "index.html" || f.endsWith("/index.html")) && !isEmbed(dir, f))
   .sort((a, b) => (a === "index.html" ? -1 : b === "index.html" ? 1 : a.localeCompare(b)));
 
 export const pageUrl = (slug, file) => BASE + slug + "/" + file.replace(/index\.html$/, "");

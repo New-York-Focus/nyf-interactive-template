@@ -10,7 +10,7 @@
 // does the same in a few lines.
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { pathToFileURL } from "node:url";
-import { htmlFiles } from "./pages.mjs";
+import { htmlFiles, isEmbed } from "./pages.mjs";
 
 const SITE = "https://nysfocus.com";
 const PARTS = {
@@ -190,6 +190,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     let n = 0;
     for (const f of htmlFiles(dir)) {
       const path = `${dir}/${f}`, html = readFileSync(path, "utf8");
+      // An embed has neither (pages.mjs): taken out if it had them
+      if (isEmbed(dir, f)) { const out = html.replace(fre, "").replace(hre, ""); if (out !== html) writeFileSync(path, out); continue; }
       let out = fre.test(html) ? html.replace(fre, () => footer) : html.replace(/<\/body>/i, () => `${footer}\n</body>`);
       out = hre.test(out) ? out.replace(hre, () => header) : out.replace(/<body\b[^>]*>/i, (b) => `${b}\n${header}`);
       if (!out.includes(footer) || !out.includes(header)) throw new Error(`${path}: no <body> and </body> to put the header and footer in`);

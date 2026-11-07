@@ -2,7 +2,7 @@
 // or that the newsroom's rules forbid. Usage: node scripts/check.mjs [site dir] [interactive.json]
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { htmlFiles, pages, pageUrl, config } from "./pages.mjs";
+import { htmlFiles, pages, embeds, isEmbed, pageUrl, config } from "./pages.mjs";
 import { block as footerBlock } from "./footer.mjs";
 import { block as headBlock } from "./head.mjs";
 import { TITLE, DESCRIPTION, IMAGE, width, decode, imageSize } from "./seo.mjs";
@@ -119,11 +119,26 @@ for (const f of pages(dir)) {
 // build puts them there), on every page and 404.html.
 const footer = footerBlock("footer"), header = footerBlock("header"), head = headBlock();
 for (const f of htmlFiles(dir)) {
+  if (isEmbed(dir, f)) continue;   // below
   const html = read(f);
   if (!html.includes(footer)) fail(f, "missing the nysfocus.com footer, or it was edited (run npm run build)");
   if (!html.includes(header)) fail(f, "missing the nysfocus.com header, or it was edited (run npm run build)");
   const i = html.indexOf(head);
   if (i < 0 || i > html.search(/<\/head>/i)) fail(f, "missing the shared <head> tags from brand/head.html, or they were edited (run npm run build)");
+}
+
+// Embeds (pages.mjs): only in an article's iframe, so kept out of search, and without the header, footer or analytics,
+// which the article has (Kyle, 2026-11-07: an article with six charts counted a reader seven times, and loaded Tag
+// Manager seven times). The font kit, as on every page.
+for (const f of embeds(dir)) {
+  const html = read(f), head = html.slice(0, Math.max(0, html.search(/<\/head>/i)));
+  const robots = [...head.matchAll(/<meta\b[^>]*>/gi)].map((t) => t[0]).find((t) => /name\s*=\s*["']robots["']/i.test(t));
+  if (!robots || !/noindex/i.test(attr(robots, "content") || "")) fail(f, 'an embed needs <meta name="robots" content="noindex"> (it is only for an article\'s iframe)');
+  if (/stats\.gridwork\.co|GTM-5GLGNHCQ|googletagmanager\.com/.test(html)) fail(f, "an embed has no analytics: the article around it counts the reader");
+  if (/<!-- nyf-(header|footer|head)\b/.test(html)) fail(f, "an embed has no nysfocus.com header, footer or shared head tags (run npm run build)");
+  const kit = html.match(/<link\b[^>]*href="https:\/\/cloud\.typography\.com\/14378\/7423632\/css\/fonts\.css"[^>]*>/);
+  if (!kit) fail(f, "missing the font kit <link> (https://cloud.typography.com/14378/7423632/css/fonts.css)");
+  else if (!/\sreferrerpolicy="origin"/.test(kit[0])) fail(f, 'the font kit <link> needs referrerpolicy="origin" (the kit refuses a request without a referrer)');
 }
 
 // 4. Sitemap lists exactly the pages.
@@ -195,4 +210,4 @@ if (problems.length) {
   console.error(`${problems.length} problem(s):\n` + problems.map((p) => "  - " + p).join("\n"));
   process.exit(1);
 }
-console.log(`check: ${pages(dir).length} pages OK for ${"https://nysfocus.com/interactives/" + cfg.slug + "/"}`);
+console.log(`check: ${pages(dir).length} pages${embeds(dir).length ? ` and ${embeds(dir).length} embeds` : ""} OK for ${"https://nysfocus.com/interactives/" + cfg.slug + "/"}`);

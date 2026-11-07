@@ -223,6 +223,21 @@ From the 2026 general election results (`nyf-2026-election-results`, its Decisio
     it. Check the live page with Google's Rich Results Test ("Live blog"), and ask for a recrawl in Search Console (URL
     Inspection › Request indexing) to have Google see it sooner. The label is Google's to show, and not promised.
 
+
+## Embeds (charts for an article)
+
+A chart or map made only to sit in an iframe in a nysfocus.com article is an embed, not a page. Mark it with
+`<meta name="nyf-embed" content="chart">` and `<meta name="robots" content="noindex">` in its `<head>`. Then `npm run
+build` leaves out (or takes out) the header, footer and shared head tags, and leaves it out of the sitemap, and `npm test`
+checks that it has no Plausible or Tag Manager: the article around it counts the reader, once. It keeps the font kit
+`<link>`, its own relative links and the size limits.
+
+- Report its height to the article, so the iframe fits it: `parent.postMessage({ nyfChart: location.pathname, height },
+  "*")` on load and whenever it changes (a `ResizeObserver` on its content). The article's embed code listens for it.
+- In the embed code, reserve the height it will have on a phone, where it's usually tallest, so the article doesn't jump
+  as it loads (a `<style>` with a height for each width, not one inline height for desktop), and keep `loading="lazy"`.
+- Load what it needs and no more: a map's shapes simplified for its size; libraries once, from a pinned version.
+
 ## Speed
 Measured on the 2026 election results pages (Lighthouse, and a phone-speed Chromium), 2026-10-31:
 - **Nothing shifts after load.** Anything a script draws after the page loads (a results table, a chart, a list) starts

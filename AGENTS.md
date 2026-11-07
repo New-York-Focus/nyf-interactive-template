@@ -46,6 +46,8 @@ directly; Claude Code reads it through `CLAUDE.md`).
   space), so nothing shifts; every `<img>` has `width` and `height`; a page stays under 500 KB of HTML; hidden panels draw
   their content when first opened (README › Speed).
 - Every page keeps the analytics block from the template (Plausible and Google Tag Manager, the same as nysfocus.com). Don't add other trackers, ad scripts or third-party embeds without asking.
+  The one exception: an embed (a chart or map made only for an article's iframe, marked `<meta name="nyf-embed">`) has no
+  analytics, header or footer, and is noindex; the article counts the reader (README › Embeds).
 - Don't change `nyf-interactives` from here. Launches and routing are PRs there, reviewed by Kyle.
 
 ## Working together
@@ -129,6 +131,11 @@ change is logged in the repo:
   on the screen (`.nyf-tip`, `site/brand.js`), and the README's patterns for data tables, filters and maps. Kyle
 - 2026-11-04 · Live coverage (a live updates feed) is marked up as a schema.org `LiveBlogPosting` while it's live, for
   Google's LIVE label in Top Stories (README › Election projects; from the 2026 election results, where it worked). Kyle
+- 2026-11-07 · Embeds: a chart or map made only to sit in an iframe in a nysfocus.com article is marked
+  `<meta name="nyf-embed">` and has no header, footer, shared head tags, Plausible or Tag Manager (the article counts the
+  reader once), is `noindex` and stays out of the sitemap; `npm test` checks each one for that. Replacing "every page keeps
+  the analytics block" for embeds alone (an article with six charts from the county elections project counted a reader
+  seven times and loaded Tag Manager seven times). Kyle
 - 2026-11-04 · Election projects (README › Election projects): winners called (by the AP, or uncontested at poll
   closing), never leaders; where no one calls the races, leads labeled as leads, never calls (the 2026 county
   elections). The winner's ✓ after the name where the share has its own column, after the share where it's on the same

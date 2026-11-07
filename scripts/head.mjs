@@ -4,7 +4,7 @@
 // Page-specific tags (title, description, canonical, og:url, og:image and its alt text) stay in each page.
 import { readFileSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
-import { htmlFiles } from "./pages.mjs";
+import { htmlFiles, isEmbed } from "./pages.mjs";
 
 const START = "<!-- nyf-head: shared New York Focus tags, from brand/head.html by npm run build. Don't edit here. -->";
 const END = "<!-- /nyf-head -->";
@@ -19,6 +19,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   let n = 0;
   for (const f of htmlFiles(dir)) {
     const path = `${dir}/${f}`, html = readFileSync(path, "utf8");
+    // An embed has none (pages.mjs): taken out if it had them
+    if (isEmbed(dir, f)) { const out = html.replace(re, ""); if (out !== html) writeFileSync(path, out); continue; }
     const out = re.test(html) ? html.replace(re, () => b) : html.replace(/<\/head>/i, () => `${b}\n</head>`);
     if (out === html && !html.includes(b)) throw new Error(`${path}: no </head> to put the shared tags before`);
     if (out !== html) writeFileSync(path, out);

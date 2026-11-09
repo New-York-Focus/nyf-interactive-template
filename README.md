@@ -237,17 +237,26 @@ From the 2026 general election results (`nyf-2026-election-results`, its Decisio
 
 ## Embeds (charts for an article)
 
-A chart or map made only to sit in an iframe in a nysfocus.com article is an embed, not a page. Mark it with
-`<meta name="nyf-embed" content="chart">` and `<meta name="robots" content="noindex">` in its `<head>`. Then `npm run
-build` leaves out (or takes out) the header, footer and shared head tags, and leaves it out of the sitemap, and `npm test`
-checks that it has no Plausible or Tag Manager: the article around it counts the reader, once. It keeps the font kit
-`<link>`, its own relative links and the size limits.
+**A chart or map made for an article goes in `nyf-embeds`, not in a project** (2026-11-09): one repo for every embed,
+served at `nysfocus.com/embeds/YYYY/MM/name/`, with its checks, its height measured for each width, and an embed code to
+paste into the article (`embed-code.txt`). The code is complete in itself: its iframe, sized by its own `<style>` from
+the first paint, so the article never moves as the chart loads, and it works wherever the article's HTML goes,
+including the sites that republish our articles, with no other code. Its README says how to add one. A published
+embed stays as it ran, and its address is never reused.
 
+The exception: an embed that reads a live project's data (a results widget, say) stays in that project, which serves
+it; `nyf-embeds` will map an `/embeds/` address to it (its `external.json`, added with the first such embed). Such an
+embed follows the same rules, which `npm test` here checks:
+
+- Mark it with `<meta name="nyf-embed" content="chart">` and `<meta name="robots" content="noindex">` in its `<head>`.
+  Then `npm run build` leaves out (or takes out) the header, footer and shared head tags, and leaves it out of the
+  sitemap, and `npm test` checks that it has no Plausible or Tag Manager: the article around it counts the reader, once.
+  It keeps the font kit `<link>`, its own relative links and the size limits.
 - Report its height to the article, so the iframe fits it: `parent.postMessage({ nyfChart: location.pathname, height },
-  "*")` on load and whenever it changes (a `ResizeObserver` on its content). The article's embed code listens for it.
-- In the embed code, reserve the height it will have on a phone, where it's usually tallest, so the article doesn't jump
-  as it loads (a `<style>` with a height for each width, not one inline height for desktop), and keep `loading="lazy"`.
+  "*")` on load and whenever it changes (a `ResizeObserver` on its content). `nyf-embeds`' loader listens for it.
 - Load what it needs and no more: a map's shapes simplified for its size; libraries once, from a pinned version.
+- Its interactions can be counted on the article's pageview: `parent.postMessage({ nyfEvent: "county", label: "Erie" },
+  "*")` becomes a Plausible "Embed Interaction" event (`nyf-embeds` › README › The embed code).
 
 ## Speed
 Measured on the 2026 election results pages (Lighthouse, and a phone-speed Chromium), 2026-10-31:

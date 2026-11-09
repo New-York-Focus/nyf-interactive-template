@@ -8,7 +8,7 @@ import { pathToFileURL } from "node:url";
 
 export const SETUP_MARK = "nyf-setup-card";
 const W = 1200, H = 630, RULE = 14;
-const CREAM = [0xfd, 0xf2, 0xdd], YELLOW = [0xf8, 0xbc, 0x47];   // --nyf-cream, --nyf-yellow in site/brand.css
+const CREAM = [0xfd, 0xf2, 0xdd], YELLOW = [0xf8, 0xbc, 0x47];   // --nyf-cream, --nyf-yellow in brand.css (nyf-brand)
 
 function chunk(type, data) {
   const out = Buffer.alloc(12 + data.length);

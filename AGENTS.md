@@ -33,11 +33,14 @@ directly; Claude Code reads it through `CLAUDE.md`).
   - A timeout on every outside call, failures not cached, and never log what readers type or what's posted (queries,
     addresses, URLs, bodies): log the provider or route and the status only.
   - (The Pages project's Functions, in `functions/`, follow the same rules.)
-- Brand: style with the variables and shared classes in `site/brand.css` (README › Brand; `site/brand.js` for its
-  tooltips), and keep the font kit `<link>`, with `referrerpolicy="origin"`, on every page. The nysfocus.com header and footer come from `brand/`
-  (`npm run build` inserts them); never edit them in the pages. Update them with `npm run footer:sync`.
-- The shared `<head>` tags (icons, social) come from `brand/head.html`, inserted by `npm run build`; edit them
-  there, never in the pages.
+- Brand: style with the variables and shared classes in `brand.css` (README › Brand; `brand.js` for its tooltips and the
+  shelf's menus), and keep the font kit `<link>`, with `referrerpolicy="origin"`, on every page. Both come from
+  `nyf-brand` (`https://nysfocus.com/brand/v<N>/`), in the version `brand.json` pins: link `brand.css` and `brand.js` as
+  you like (relative is fine) and `npm run build` points them at that version. Never copy them into the project.
+- The nysfocus.com header and footer and the shared `<head>` tags (icons, social) come from `nyf-brand` too, inserted by
+  `npm run build` in the versions `brand.json` pins; never edit them in the pages. Changes to them are made in
+  `nyf-brand`; a project takes a new version by changing the number in `brand.json` (and the router keeps the header and
+  footer current on projects whose entry turns that on).
 - Never launch a page without an SEO `<title>` within 580px, a meta description within 920px, and a 1200×630 link-card
   image (`og:image`, with alt text) of its own; `npm test` enforces these, and the placeholder `share.png` doesn't count.
   A new project's setup commit can use the setup card (`npm run card:setup`): `npm test` only warns about it, and
@@ -89,8 +92,9 @@ change is logged in the repo:
 - 2026-10-29 · What readers type never goes from the browser to an outside service; it goes through the project's own
   server routes. Kyle
 - 2026-10-29 · The header is the website's short version (the bar it shows once you scroll: logo, menu, Donate, Sign
-  Up), kept in sync with the footer; `brand/header.js` replaces the site's JS for its menu. 2026-11-04: without the
-  site's promo banner over it (the election tracker's, on election night), which the sync drops. Kyle
+  Up), kept in sync with the footer; a few lines of our own replace the site's JS for its menu (in `nyf-brand` since
+  2026-11-09). 2026-11-04: without the site's promo banner over it (the election tracker's, on election night), which
+  the sync drops. Kyle
 - 2026-10-29 · Anyone may change any part of a project (growth, editorial, leadership); people decide when to loop each
   other in, and every change is logged (PR description, and Decisions for lasting calls). Kyle
 - 2026-10-29 · Any New York Focus staff member (or, on a project with a third party, someone from that partner) may merge
@@ -128,9 +132,17 @@ change is logged in the repo:
 - 2026-11-04 · From the 2026 election results, shared: the kicker over the headline (`.nyf-kicker`), breadcrumbs as the
   site's article categories in its dark gray (`.nyf-crumbs`, `--nyf-grey-dark`, replacing that project's #343434), the
   section shelf (`.nyf-shelf`, on `--nyf-paper`, #f6f5f2, a very light warm gray added to the brand colors), tooltips kept
-  on the screen (`.nyf-tip`, `site/brand.js`), and the README's patterns for data tables, filters and maps. Kyle
+  on the screen (`.nyf-tip`, `brand.js`), and the README's patterns for data tables, filters and maps. Kyle
 - 2026-11-04 · Live coverage (a live updates feed) is marked up as a schema.org `LiveBlogPosting` while it's live, for
   Google's LIVE label in Top Stories (README › Election projects; from the 2026 election results, where it worked). Kyle
+- 2026-11-09 · Brand files are served once, from `nysfocus.com/brand/`, by the Worker `nyf-brand`, versioned in the
+  address with plain numbers, replacing `brand/` and `site/brand.*` in every repo (phase 2 of the nysfocus.com Edge
+  Blueprint). A project pins its versions in `brand.json` (`brand`: `brand.css`, `brand.js` and the shared head tags;
+  `site`: the nysfocus.com header and footer, whose styles are linked as `site.css` rather than copied into every page),
+  so a new version shows in its preview first; `npm test` warns when it's behind, `check:launch` fails. The
+  `nyf-interactives` router swaps the current header and footer into the pages of projects whose entry turns it on
+  (`brandSite`), so a header change needs no rebuild; each page's own copy is the fallback. The section shelf's menus are
+  shared (`.nyf-shelf-btn`, `.nyf-shelf-panel`); each project keeps its own list of links. Kyle
 - 2026-11-07 · Embeds: a chart or map made only to sit in an iframe in a nysfocus.com article is marked
   `<meta name="nyf-embed">` and has no header, footer, shared head tags, Plausible or Tag Manager (the article counts the
   reader once), is `noindex` and stays out of the sitemap; `npm test` checks each one for that. Replacing "every page keeps

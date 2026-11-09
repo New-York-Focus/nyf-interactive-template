@@ -4,11 +4,12 @@
 //   npm run template:check   list what differs and exit 1 if anything does (the weekly "Template sync check" Action)
 // TEMPLATE_BRANCH=<branch> reads another branch of the template instead of main, to try a template change first.
 // Whole files are replaced; in AGENTS.md and README.md only the template's side of the nyf-template-sync marker line is,
-// so a project's own notes stay; package.json gets the template's scripts, keeping any the project adds.
+// so a project's own notes stay; package.json gets the template's scripts, keeping any the project adds. Files and scripts
+// the template no longer has ("removed" and "removedScripts" in template.json) are deleted.
 // Reads the template with git. It's public, so no access is needed; if it ever goes private, git uses your own access
 // locally, and GitHub Actions a TEMPLATE_READ_TOKEN secret (a read-only token for the template).
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, rmSync } from "node:fs";
 import { dirname } from "node:path";
 import { config } from "./pages.mjs";
 
@@ -62,9 +63,11 @@ function plan() {
     const theirs = tpl.show(path), text = merge(path, side, theirs, ours);
     if (ours !== text) changes.push({ path, text });
   }
+  for (const path of t.removed || []) if (existsSync(path)) changes.push({ path, remove: true });
   if (t.packageScripts) {
     const theirs = JSON.parse(tpl.show("package.json")), ours = JSON.parse(read("package.json"));
     const scripts = { ...ours.scripts, ...theirs.scripts };
+    for (const name of t.removedScripts || []) delete scripts[name];
     if (JSON.stringify(scripts) !== JSON.stringify(ours.scripts))
       changes.push({ path: "package.json", text: JSON.stringify({ ...ours, scripts }, null, 2) + "\n" });
   }
@@ -81,10 +84,13 @@ if (config().slug === "example-interactive") {   // the template itself
   if (!changes.length) console.log(`template: up to date with nyf-interactive-template (${commit})`);
   else if (cmd === "check") {
     console.log(`template: ${changes.length} file(s) differ from nyf-interactive-template (${commit}); run npm run template:sync`);
-    for (const c of changes) console.log(`  - ${c.path}`);
+    for (const c of changes) console.log(`  - ${c.remove ? "remove " : ""}${c.path}`);
     process.exit(1);
   } else {
-    for (const c of changes) { mkdirSync(dirname(c.path) || ".", { recursive: true }); writeFileSync(c.path, c.text); console.log(`  updated ${c.path}`); }
+    for (const c of changes) {
+      if (c.remove) { rmSync(c.path); console.log(`  removed ${c.path}`); continue; }
+      mkdirSync(dirname(c.path) || ".", { recursive: true }); writeFileSync(c.path, c.text); console.log(`  updated ${c.path}`);
+    }
     console.log(`template: synced with nyf-interactive-template (${commit}); now npm test, look at a page, and open a PR`);
   }
 } else {

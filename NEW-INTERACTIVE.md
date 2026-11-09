@@ -61,8 +61,8 @@ If I already gave any of these in my message, don't ask again.
 - **Pages:**
   - The site lives in `site/`, one folder per page (`site/<page>/index.html`), with relative links only.
   - Generate the pages from the data with a script rather than by hand, so anyone can rebuild them.
-- **Brand:** style with the variables in `site/brand.css`, and keep the font kit `<link>`, the analytics block and the
-  shared head tags from the template.
+- **Brand:** style with the variables in `brand.css` (from `nysfocus.com/brand/`, in the version `brand.json` pins), and
+  keep the font kit `<link>`, the analytics block and the shared head tags from the template.
   - `npm run build` adds the nysfocus.com header and footer; don't add or edit them yourself.
   - Keep it readable at phone width.
 - **Search and sharing:** every page needs its own title (within 580px), description (within 920px) and 1200×630

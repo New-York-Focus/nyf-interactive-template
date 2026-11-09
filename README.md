@@ -39,9 +39,15 @@ The quickest way: open an AI agent session (Claude Code, Codex) on this repo and
   Plausible like article categories) and the Google Tag Manager snippet, exactly as in `site/index.html`.
 - **Brand fonts** on every page: the nysfocus.com font kit `<link>`, as in `site/index.html`, with
   `referrerpolicy="origin"`.
-- **The nysfocus.com header and footer** on every page and `404.html`, exactly as in `brand/`. `npm run build` puts them there; don't edit them in the pages.
-- **The shared head tags** on every page and `404.html`, exactly as in `brand/head.html`: the site's icons, the social tags that are the
-  same on every page (`og:site_name`, `twitter:site`…) and a font preconnect. `npm run build` puts them before `</head>`.
+- **The brand from `nysfocus.com/brand/`,** in the versions `brand.json` pins (`{ "brand": 1, "site": 1 }`): every page
+  and `404.html` links that version's `brand.css`, and any link to `brand.css` or `brand.js` is that version's
+  (`npm run build` points them there); no copy of either in the project.
+- **The nysfocus.com header and footer** on every page and `404.html`, exactly as the pinned site version has them, each
+  marked with its version (`data-nyf-site`). `npm run build` puts them there; don't edit them in the pages.
+- **The shared head tags** on every page and `404.html`, exactly as the pinned brand version has them: the site's icons,
+  the social tags that are the same on every page (`og:site_name`, `twitter:site`…), a font preconnect, and the link to
+  the header and footer's styles. `npm run build` puts them before `</head>`.
+- **Not behind:** `npm test` warns when `brand.json` pins an older version than the newest; `npm run check:launch` fails.
 
 - **Search and link cards, on every page** (a project can't launch without them):
   - a `<title>` no wider than **580px** in Google's results (20px Arial), and a `<meta name="description">` no wider than
@@ -55,13 +61,19 @@ The quickest way: open an AI agent session (Claude Code, Codex) on this repo and
 Not checked automatically, but expected: `twitter:image:alt` (the same as `og:image:alt`), and a page that works at phone width.
 
 ## Brand: colors, fonts, the header and the footer
-- **Colors, fonts and spacing:** `site/brand.css` has the nysfocus.com colors (with the brand kit's tertiary blues and
+- **Where it comes from:** `brand.css`, `brand.js`, the nysfocus.com header and footer and the shared head tags are
+  served by `nyf-brand` at `https://nysfocus.com/brand/`, one copy for every interactive (2026-11-09). Each change there
+  is a new numbered version, never an edit to one already out; `brand.json` pins the versions this project uses, and
+  `npm run build` reads them (into `.brand/`, kept between builds) and puts them in the pages. To take a newer version,
+  change the number, run `npm test`, and look at the PR's preview before merging. To change the brand itself, change
+  `nyf-brand` (its README), never a project.
+- **Colors, fonts and spacing:** `brand.css` has the nysfocus.com colors (with the brand kit's tertiary blues and
   light gray, `--nyf-blue-mid`, `--nyf-blue-light`, `--nyf-blue-pale` and `--nyf-grey-light`, for uses that need more
   colors to tell things apart), type and spacing as CSS variables
   (`--nyf-yellow`, `--nyf-ink`, `--nyf-font-headline`, `--nyf-font-serif`…, and the 8px spacing scale `--nyf-space-1`
   to `--nyf-space-8`, with `--nyf-gutter` and `--nyf-section`, which grow with the screen as the site's do). Space things
   as the site does: tight inside a group, generous between groups. Link the font kit and `brand.css` from every page, as `site/index.html`
-  does, and style with the variables. The fonts (Knockout and Chronicle, from Hoefler&Co) are licensed for nysfocus.com:
+  does (the build points `brand.css` at the pinned version), and style with the variables. The fonts (Knockout and Chronicle, from Hoefler&Co) are licensed for nysfocus.com:
   they load on `nysfocus.com/interactives/…` but not on `workers.dev` previews, which show the fallbacks. The kit checks
   the referrer and refuses a request without one (403), so its link carries `referrerpolicy="origin"`, which sends
   `https://nysfocus.com/` whatever the page's own policy: the 2026 election results set `no-referrer` for X's video
@@ -75,9 +87,11 @@ Not checked automatically, but expected: `twitter:image:alt` (the same as `og:im
   From the 2026 election results: a kicker over the headline (`.nyf-kicker`: "Last updated at 10:42 pm ET on Nov. 3");
   breadcrumbs styled as the site's article categories (`.nyf-crumbs`); a section shelf, a row of links to an
   interactive's sections that sticks under the header (`.nyf-shelf`, on `--nyf-paper`, the page's own section with
-  `aria-current="page"`, underlined in yellow); and tooltips (`.nyf-tip` with `data-tip` and an `aria-label`, on hover,
-  focus or a tap, at most 12.5rem wide), which `site/brand.js` keeps 8px inside the screen (load it with
-  `<script src="brand.js" defer>`). `site/index.html` and `site/detail/index.html` use them.
+  `aria-current="page"`, underlined in yellow), with menus where it needs them (`<button class="nyf-shelf-btn"
+  aria-expanded="false" aria-controls="…">` in the row, `<div class="nyf-shelf-panel" id="…" hidden>` after it; the menu
+  holding the page has `nyf-here`; `brand.js` opens them on a click or a tap, never on hover); and tooltips (`.nyf-tip` with `data-tip` and an `aria-label`, on hover,
+  focus or a tap, at most 12.5rem wide), which `brand.js` keeps 8px inside the screen (load it with
+  `<script src="brand.js" defer>`; the build points it at the pinned version). `site/index.html` and `site/detail/index.html` use them.
 - **Type sizes, one per job** (`--nyf-text-*` in `brand.css`): 12px capitals for breadcrumbs, a shelf, labels and meta
   lines ("47% of election districts reporting", "Called by the AP at 10:30 pm ET on Nov. 3"); 14px gray for
   secondary text (a kicker, a source line, a party under a name, map legends); 16px for text, tables and controls; 18px
@@ -95,19 +109,16 @@ Not checked automatically, but expected: `twitter:image:alt` (the same as `og:im
   heading in capitals (`.nyf-section-rule`) instead of the full bar; a data page may set its dek in sans, as wide as the
   page (`.nyf-dek.nyf-dek-data`), and keep Chronicle for long reading only (a live blog's posts); a project with many
   pages that look alike (district maps) may put the page's name on its link cards.
-- **Footer:** the website's footer, as-is, at the end of every page. `brand/footer.html` is the website's `<footer>` with
-  links made absolute; `brand/footer.css` is the website's own CSS rules for it, scoped to `.nyf-footer` after a reset, so
-  the footer and the interactive can't restyle each other. `npm run build` (part of `npm test`) inserts both before
-  `</body>` on every page, between `<!-- nyf-footer… -->` and `<!-- /nyf-footer -->`.
-- **Header:** the short version of the website's header (the bar it shows once you scroll: logo, menu, Donate and
-  Sign Up) at the start of every page, the same way as the footer: `brand/header.html` and `brand/header.css`, scoped to
-  `.nyf-header`, between `<!-- nyf-header… -->` and `<!-- /nyf-header -->`. On the site its menu runs on the site's JS
-  bundle, which interactives don't load; `brand/header.js` does the same in a few lines (the sync turns the menu's
-  Alpine.js attributes into `data-nyf-*` ones it reads). Until nysfocus.com fixes them, the sync also gives the menu
-  icons `alt=""` and the logo link a name ("New York Focus"), which screen readers and Lighthouse need.
-- **Keeping them in sync:** when the website's header or footer changes, run `npm run footer:sync`, then `npm test`, look
-  at a page and open a PR with `brand/` and `site/`. The "Footer sync check" GitHub Action compares them every morning and
-  opens an issue when they differ (run it by hand from the Actions tab too).
+- **Footer and header:** the website's footer, as-is, at the end of every page, and the short version of its header (the
+  bar it shows once you scroll: logo, menu, Donate and Sign Up) at the start, between `<!-- nyf-footer… -->` and
+  `<!-- /nyf-footer -->` and the same for `nyf-header`. They're the site's own markup with links made absolute, and its own
+  CSS rules for them, scoped to `.nyf-header` and `.nyf-footer` after a reset (in `site.css`, linked in the head), so they
+  and the interactive can't restyle each other; a few lines of script replace the site's JS for the header's menu.
+- **Keeping them in sync:** `nyf-brand` compares them with nysfocus.com every morning and opens an issue when they
+  differ; a new site version is released there and moved to "current" (its README). The `nyf-interactives` router then
+  swaps the current header and footer into the pages of every project whose entry has `brandSite: true`, as it serves
+  them, so those projects show it within minutes with no rebuild; the version in `brand.json` is what the pages are built
+  with (the fallback, and what `workers.dev` and `pages.dev` previews show). Change it to stay current there too.
 
 ## Maps (SVG)
 Lessons from the 2026 election results maps:

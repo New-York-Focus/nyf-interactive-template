@@ -3,8 +3,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { htmlFiles, pages, embeds, isEmbed, pageUrl, config } from "./pages.mjs";
-import { block as footerBlock } from "./footer.mjs";
-import { block as headBlock } from "./head.mjs";
+import { pins, blocks, newest, brandUrl, BRAND_LINK } from "./brand.mjs";
 import { TITLE, DESCRIPTION, IMAGE, width, decode, imageSize } from "./seo.mjs";
 import { SETUP_MARK } from "./card.mjs";
 
@@ -115,17 +114,33 @@ for (const f of pages(dir)) {
   else if (!/\sreferrerpolicy="origin"/.test(kit[0])) fail(f, 'the font kit <link> needs referrerpolicy="origin" (the kit refuses a request without a referrer)');
 }
 
-// The nysfocus.com header and footer and the shared <head> tags (icons, social), exactly as in brand/ (npm run
-// build puts them there), on every page and 404.html.
-const footer = footerBlock("footer"), header = footerBlock("header"), head = headBlock();
-for (const f of htmlFiles(dir)) {
-  if (isEmbed(dir, f)) continue;   // below
-  const html = read(f);
-  if (!html.includes(footer)) fail(f, "missing the nysfocus.com footer, or it was edited (run npm run build)");
-  if (!html.includes(header)) fail(f, "missing the nysfocus.com header, or it was edited (run npm run build)");
-  const i = html.indexOf(head);
-  if (i < 0 || i > html.search(/<\/head>/i)) fail(f, "missing the shared <head> tags from brand/head.html, or they were edited (run npm run build)");
+// The brand, from nyf-brand (nysfocus.com/brand/) in the versions brand.json pins (scripts/brand.mjs; 2026-11-09): the
+// nysfocus.com header and footer and the shared <head> tags (icons, social, the header and footer's styles), exactly as
+// npm run build puts them, on every page and 404.html; brand.css on every page, and every link to brand.css or brand.js
+// the pinned version's. No copy of them in the project.
+let pinned = null, b = null;
+try { pinned = pins(); b = blocks(pinned); } catch (e) { fail("brand.json", e.message); }
+for (const f of ["brand.css", "brand.js"]) {
+  if (existsSync(`${dir}/${f}`)) fail(f, `comes from nysfocus.com/brand/ now (brand.json): delete ${dir}/${f}`);
 }
+for (const f of htmlFiles(dir)) {
+  if (!pinned) break;
+  const html = read(f);
+  for (const m of html.matchAll(BRAND_LINK)) {
+    const want = brandUrl(pinned.brand, `brand.${m[3]}`);
+    if (m[2] + `brand.${m[3]}` !== want) fail(f, `links ${m[2]}brand.${m[3]}, expected ${want} (run npm run build)`);
+  }
+  if (isEmbed(dir, f)) continue;   // below
+  if (!html.includes(`href="${brandUrl(pinned.brand, "brand.css")}"`)) fail(f, `doesn't link brand.css (${brandUrl(pinned.brand, "brand.css")})`);
+  if (!html.includes(b.footer)) fail(f, "missing the nysfocus.com footer, or it was edited (run npm run build)");
+  if (!html.includes(b.header)) fail(f, "missing the nysfocus.com header, or it was edited (run npm run build)");
+  const i = html.indexOf(b.head);
+  if (i < 0 || i > html.search(/<\/head>/i)) fail(f, "missing the shared <head> tags, or they were edited (run npm run build)");
+}
+// Behind nysfocus.com/brand/'s newest versions: a warning, and at launch a failure.
+const latest = newest(), behind = [];
+if (pinned && latest) for (const k of ["brand", "site"]) if (pinned[k] < latest[k]) behind.push(`${k} v${pinned[k]} (newest v${latest[k]})`);
+if (behind.length && LAUNCH) fail("brand.json", `pins ${behind.join(" and ")}: take the newest before launch`);
 
 // Embeds (pages.mjs): only in an article's iframe, so kept out of search, and without the header, footer or analytics,
 // which the article has (Kyle, 2026-11-07: an article with six charts counted a reader seven times, and loaded Tag
@@ -206,6 +221,7 @@ for (const f of htmlFiles(dir)) if (/(api[_-]?key|secret|token)\s*[:=]\s*["'][A-
 
 if (setupCards.length) console.warn(`check: ${setupCards.length} page(s) still use the setup card (${setupCards.slice(0, 3).join(", ")}${setupCards.length > 3 ? "…" : ""}); npm run check:launch fails until each has its own link-card image`);
 if (heavy.length) console.warn(`check: ${heavy.length} page(s) over ${MAX_KB} KB of HTML (${heavy.slice(0, 3).join(", ")}${heavy.length > 3 ? "…" : ""}); move data and maps into shared files the browser caches, or make them smaller (README › Speed)`);
+if (behind.length && !LAUNCH) console.warn(`check: brand.json pins ${behind.join(" and ")}; change the number, npm test, and look at the PR's preview`);
 if (problems.length) {
   console.error(`${problems.length} problem(s):\n` + problems.map((p) => "  - " + p).join("\n"));
   process.exit(1);

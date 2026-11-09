@@ -91,6 +91,12 @@ if (config().slug === "example-interactive") {   // the template itself
       if (c.remove) { rmSync(c.path); console.log(`  removed ${c.path}`); continue; }
       mkdirSync(dirname(c.path) || ".", { recursive: true }); writeFileSync(c.path, c.text); console.log(`  updated ${c.path}`);
     }
+    // A sync that brought a new version of this script runs it once more, so what only the new version does (removals,
+    // say) happens now, not at the next sync.
+    if (changes.some((c) => c.path === "scripts/template.mjs") && !process.env.NYF_TEMPLATE_RERUN) {
+      execFileSync(process.execPath, ["scripts/template.mjs", "sync"], { stdio: "inherit", env: { ...process.env, NYF_TEMPLATE_RERUN: "1" } });
+      process.exit(0);
+    }
     console.log(`template: synced with nyf-interactive-template (${commit}); now npm test, look at a page, and open a PR`);
   }
 } else {

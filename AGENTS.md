@@ -147,9 +147,11 @@ change is logged in the repo:
 - 2026-11-09 · Embeds live in one repo, `nyf-embeds`, served by one Worker at `nysfocus.com/embeds/YYYY/MM/name/` (filed
   by the year and month published; an address never reused), not in projects: no new Worker, route or setup per chart,
   and the loader and helpers once. A published embed stays as it ran, a correction is a dated note in its README, and a
-  different chart is a new embed (`npm test` there enforces both). Articles paste an embed's full code, whose `<style>`
-  reserves its height from the first paint (a layout shift of 0 measured, against 0.44 to 0.48 for a bare `<div>` near
-  the top of an article on a phone); Craft's article template loads `nysfocus.com/embeds/loader.js` once. An embed that
+  different chart is a new embed (`npm test` there enforces both). Articles paste an embed's full code, complete in
+  itself so it works on the sites that republish our articles: its iframe, sized by its `<style>` from the first paint (a
+  layout shift of 0 measured, against 0.44 to 0.48 for a bare `<div>` near the top of an article on a phone). Craft's
+  article template may load `nysfocus.com/embeds/loader.js` once, to fit a chart whose height changes and count its
+  interactions; the code doesn't depend on it. An embed that
   reads a live project's data stays in that project, mapped from `/embeds/` by `nyf-embeds` (`external.json`, with the
   first one). The six charts of the 2026 elections article moved there, their old addresses redirecting (301). Kyle
 - 2026-11-07 · Embeds: a chart or map made only to sit in an iframe in a nysfocus.com article is marked

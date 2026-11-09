@@ -50,7 +50,8 @@ directly; Claude Code reads it through `CLAUDE.md`).
   their content when first opened (README › Speed).
 - Every page keeps the analytics block from the template (Plausible and Google Tag Manager, the same as nysfocus.com). Don't add other trackers, ad scripts or third-party embeds without asking.
   The one exception: an embed (a chart or map made only for an article's iframe, marked `<meta name="nyf-embed">`) has no
-  analytics, header or footer, and is noindex; the article counts the reader (README › Embeds).
+  analytics, header or footer, and is noindex; the article counts the reader (README › Embeds). A new embed goes in
+  `nyf-embeds`, not in a project, unless it reads a live project's data.
 - Don't change `nyf-interactives` from here. Launches and routing are PRs there, reviewed by Kyle.
 
 ## Working together
@@ -143,6 +144,14 @@ change is logged in the repo:
   `nyf-interactives` router swaps the current header and footer into the pages of projects whose entry turns it on
   (`brandSite`), so a header change needs no rebuild; each page's own copy is the fallback. The section shelf's menus are
   shared (`.nyf-shelf-btn`, `.nyf-shelf-panel`); each project keeps its own list of links. Kyle
+- 2026-11-09 · Embeds live in one repo, `nyf-embeds`, served by one Worker at `nysfocus.com/embeds/YYYY/MM/name/` (filed
+  by the year and month published; an address never reused), not in projects: no new Worker, route or setup per chart,
+  and the loader and helpers once. A published embed stays as it ran, a correction is a dated note in its README, and a
+  different chart is a new embed (`npm test` there enforces both). Articles paste an embed's full code, whose `<style>`
+  reserves its height from the first paint (a layout shift of 0 measured, against 0.44 to 0.48 for a bare `<div>` near
+  the top of an article on a phone); Craft's article template loads `nysfocus.com/embeds/loader.js` once. An embed that
+  reads a live project's data stays in that project, mapped from `/embeds/` by `nyf-embeds` (`external.json`, with the
+  first one). The six charts of the 2026 elections article moved there, their old addresses redirecting (301). Kyle
 - 2026-11-07 · Embeds: a chart or map made only to sit in an iframe in a nysfocus.com article is marked
   `<meta name="nyf-embed">` and has no header, footer, shared head tags, Plausible or Tag Manager (the article counts the
   reader once), is `noindex` and stays out of the sitemap; `npm test` checks each one for that. Replacing "every page keeps

@@ -46,6 +46,8 @@ for (const f of htmlFiles(dir)) {
   for (const m of body.matchAll(/\b(href|src|action|poster|data)\s*=\s*["'](\/[^/"'][^"']*|\/)["']/gi)) fail(f, `${m[1]}="${m[2]}" starts with /`);
   for (const m of html.matchAll(/\bfetch\(\s*["'`](\/[^/][^"'`]*)/g)) fail(f, `fetch("${m[1]}") starts with /`);
   for (const m of html.matchAll(/url\(\s*["']?(\/[^/)"'][^)"']*)/g)) fail(f, `url(${m[1]}) starts with /`);
+  // No copy of the script Cloudflare's bot detection adds as nysfocus.com serves a page (scripts/brand.mjs takes it out)
+  if (html.includes("__CF$cv$params")) fail(f, "has a copy of Cloudflare's bot detection script, from nysfocus.com: run npm run build");
   // Images keep their space while they load (width and height), so nothing shifts. The header and footer are the site's.
   const own = body.replace(/<!-- nyf-(header|footer)\b[\s\S]*?<!-- \/nyf-\1 -->/g, "");
   for (const m of own.matchAll(/<img\b[^>]*>/gi)) if (!attr(m[0], "width") || !attr(m[0], "height"))

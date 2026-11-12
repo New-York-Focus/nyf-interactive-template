@@ -144,6 +144,12 @@ change is logged in the repo:
   `nyf-interactives` router swaps the current header and footer into the pages of projects whose entry turns it on
   (`brandSite`), so a header change needs no rebuild; each page's own copy is the fallback. The section shelf's menus are
   shared (`.nyf-shelf-btn`, `.nyf-shelf-panel`); each project keeps its own list of links. Kyle
+- 2026-11-12 · Our scripts that read nysfocus.com (a build's brand files, nyf-brand's header and footer check) name
+  themselves with a user agent containing `nyf-` (`nyf-build`, `nyf-brand-sync`): nysfocus.com's Super Bot Fight Mode,
+  on since 2026-11-10, blocks Node's default client, and its firewall lets `nyf-` through for New York Focus's own
+  tools. Without it, every build failed at its first brand file (HTTP 403). The build also takes out the script Cloudflare's
+  bot detection adds to every HTML file nysfocus.com serves (`head.html` too), which was built into every page with a
+  stale ray ID, beside the fresh one Cloudflare adds as it serves the page; `npm test` fails on a copy. Claude, with Kyle
 - 2026-11-09 · Embeds live in one repo, `nyf-embeds`, served by one Worker at `nysfocus.com/embeds/YYYY/MM/name/` (filed
   by the year and month published; an address never reused), not in projects: no new Worker, route or setup per chart,
   and the loader and helpers once. A published embed stays as it ran, a correction is a dated note in its README, and a

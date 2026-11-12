@@ -29,10 +29,14 @@ export const siteUrl = (v, file) => `${BRAND}/site/v${v}/${file}`;
 const FILES = (p) => [[`brand-v${p.brand}/head.html`, brandUrl(p.brand, "head.html")],
   [`site-v${p.site}/header.html`, siteUrl(p.site, "header.html")], [`site-v${p.site}/footer.html`, siteUrl(p.site, "footer.html")]];
 
+// nysfocus.com's firewall lets through a user agent with "nyf-" in it, for New York Focus's own tools
+export const UA = "nyf-build (+https://github.com/New-York-Focus/nyf-interactive-template)";
+
 async function get(url) {
   for (let i = 0; ; i++) {
     try {
-      const r = await fetch(url, { signal: AbortSignal.timeout(20000) });
+      // Named as one of our tools: nysfocus.com's bot protection blocks Node's default client (2026-11-10)
+      const r = await fetch(url, { headers: { "user-agent": UA }, signal: AbortSignal.timeout(20000) });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       return await r.text();
     } catch (e) {
@@ -59,10 +63,14 @@ export async function fetchBrand(p = pins()) {
   }
 }
 
+// Cloudflare's bot detection adds a script of its own to every HTML file nysfocus.com serves, these included. Built into
+// a page, it would run there with the ray ID of the build's request, alongside the fresh one Cloudflare adds as it serves
+// the page: taken out, from copies cached before this too.
+export const cfInjected = /<script>\(function\(\)\{function c\(\)\{[^<]*?__CF\$cv\$params[\s\S]*?<\/script>\n?/g;
 const cached = (file) => {
   const path = `${CACHE}/${file}`;
   if (!existsSync(path)) throw new Error(`${path} is missing: run npm run build`);
-  return readFileSync(path, "utf8");
+  return readFileSync(path, "utf8").replace(cfInjected, "");
 };
 
 // The newest versions, as of the last build (null if nysfocus.com didn't answer).
